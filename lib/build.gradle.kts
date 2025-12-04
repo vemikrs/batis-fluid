@@ -24,7 +24,7 @@ dependencies {
     testImplementation("com.h2database:h2:2.3.232")
     testImplementation("com.mysql:mysql-connector-j:8.4.0")
     testImplementation("org.postgresql:postgresql:42.7.2")
-    testImplementation("com.microsoft.sqlserver:mssql-jdbc:12.6.1.jre11")
+    testImplementation("com.microsoft.sqlserver:mssql-jdbc:12.6.5.jre11")
     testImplementation("com.oracle.database.jdbc:ojdbc11:23.4.0.24.05")
 
     // Testcontainers for integration testing (align to latest stable)
@@ -44,8 +44,8 @@ dependencies {
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     implementation("org.mybatis.generator:mybatis-generator-core:1.4.2")
     implementation("org.apache.commons:commons-math3:3.6.1")
-    implementation("org.apache.commons:commons-lang3:3.12.0")
-    implementation("com.google.guava:guava:31.1-jre")
+    implementation("org.apache.commons:commons-lang3:3.18.0")
+    implementation("com.google.guava:guava:32.0.0-jre")
     implementation("org.apache.commons:commons-dbcp2:2.13.0")
 
     // Runtime only dependencies are not added to the compile classpath of projects that depend on this project.
@@ -59,7 +59,7 @@ dependencies {
 
     // SLF4J for logging
     implementation("org.slf4j:slf4j-api:2.0.1")
-    implementation("ch.qos.logback:logback-classic:1.4.5")
+    implementation("ch.qos.logback:logback-classic:1.4.12")
 }
 
 java {
