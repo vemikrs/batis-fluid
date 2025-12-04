@@ -6,60 +6,60 @@ plugins {
 }
 
 group = "jp.vemi"
-version = "0.0.1"
+version = "0.0.2"
 
 repositories { mavenCentral() }
 
 dependencies {
     // Use JUnit Jupiter for testing.
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.0")
-    testImplementation("org.mockito:mockito-junit-jupiter:5.3.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.11.0")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.11.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.12.1")
+    testImplementation("org.mockito:mockito-junit-jupiter:5.20.0")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.12.1")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.12.2")
 
     // Mockito for mocking in tests.
-    testImplementation("org.mockito:mockito-core:5.2.0")
+    testImplementation("org.mockito:mockito-core:5.20.0")
 
     // Database dependencies for testing.
-    testImplementation("com.h2database:h2:2.3.232")
-    testImplementation("com.mysql:mysql-connector-j:8.4.0")
-    testImplementation("org.postgresql:postgresql:42.7.2")
-    testImplementation("com.microsoft.sqlserver:mssql-jdbc:12.6.5.jre11")
-    testImplementation("com.oracle.database.jdbc:ojdbc11:23.4.0.24.05")
+    testImplementation("com.h2database:h2:2.4.240")
+    testImplementation("com.mysql:mysql-connector-j:9.5.0")
+    testImplementation("org.postgresql:postgresql:42.7.8")
+    testImplementation("com.microsoft.sqlserver:mssql-jdbc:13.2.1.jre11")
+    testImplementation("com.oracle.database.jdbc:ojdbc11:23.9.0.25.07")
 
     // Testcontainers for integration testing (align to latest stable)
-    testImplementation("org.testcontainers:junit-jupiter:1.21.3")
-    testImplementation("org.testcontainers:mysql:1.21.3")
-    testImplementation("org.testcontainers:postgresql:1.21.3")
-    testImplementation("org.testcontainers:mssqlserver:1.21.3")
-    testImplementation("org.testcontainers:oracle-xe:1.21.3")
+    testImplementation("org.testcontainers:testcontainers-junit-jupiter:2.0.2")
+    testImplementation("org.testcontainers:testcontainers-mysql:2.0.2")
+    testImplementation("org.testcontainers:testcontainers-postgresql:2.0.2")
+    testImplementation("org.testcontainers:testcontainers-mssqlserver:2.0.2")
+    testImplementation("org.testcontainers:testcontainers-oracle-xe:2.0.2")
 
     // AssertJ for fluent assertions
-    testImplementation("org.assertj:assertj-core:3.24.2")
+    testImplementation("org.assertj:assertj-core:3.27.6")
 
     // This dependency is exported to consumers, that is to say found on their compile classpath.
-    api("org.mybatis:mybatis:3.5.13")
-    api("org.mybatis:mybatis-spring:3.0.2")
+    api("org.mybatis:mybatis:3.5.19")
+    api("org.mybatis:mybatis-spring:3.0.5")
 
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     implementation("org.mybatis.generator:mybatis-generator-core:1.4.2")
     implementation("org.apache.commons:commons-math3:3.6.1")
     implementation("org.apache.commons:commons-lang3:3.18.0")
-    implementation("com.google.guava:guava:32.0.0-jre")
+    implementation("com.google.guava:guava:33.4.8-jre")
     implementation("org.apache.commons:commons-dbcp2:2.13.0")
 
     // Runtime only dependencies are not added to the compile classpath of projects that depend on this project.
-    runtimeOnly("com.mysql:mysql-connector-j:8.4.0")
+    runtimeOnly("com.mysql:mysql-connector-j:9.5.0")
 
     // Lombok for generating boilerplate code.
-    compileOnly("org.projectlombok:lombok:1.18.30")
-    annotationProcessor("org.projectlombok:lombok:1.18.30")
-    testCompileOnly("org.projectlombok:lombok:1.18.30")
-    testAnnotationProcessor("org.projectlombok:lombok:1.18.30")
+    compileOnly("org.projectlombok:lombok:1.18.42")
+    annotationProcessor("org.projectlombok:lombok:1.18.42")
+    testCompileOnly("org.projectlombok:lombok:1.18.42")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.42")
 
     // SLF4J for logging
-    implementation("org.slf4j:slf4j-api:2.0.1")
-    implementation("ch.qos.logback:logback-classic:1.4.12")
+    implementation("org.slf4j:slf4j-api:2.0.17")
+    implementation("ch.qos.logback:logback-classic:1.5.21")
 }
 
 java {
@@ -75,7 +75,8 @@ tasks.named<Test>("test").configure {
             val tags = prop.split(',').map { it.trim() }.filter { it.isNotEmpty() }
             if (tags.isNotEmpty()) includeTags(*tags.toTypedArray())
         } else {
-            excludeTags("integration")
+            // デフォルトではintegrationとv0.0.1テストを除外
+            excludeTags("integration", "v0.0.1")
         }
     }
     maxParallelForks = 1
@@ -110,10 +111,10 @@ tasks.named<JacocoReport>("jacocoTestReport").configure {
 mavenPublishing {
     publishToMavenCentral(com.vanniktech.maven.publish.SonatypeHost.CENTRAL_PORTAL)
     signAllPublications()
-    coordinates("jp.vemi", "seasar-batis", version.toString())
+    coordinates("jp.vemi", "batis-fluid-core", version.toString())
     pom {
-        name.set("SeasarBatis")
-        description.set("Seasar2-like MyBatis wrapper library that provides JdbcManager-like operations")
+        name.set("BatisFluid Core")
+        description.set("Modern, minimal, pluggable MyBatis wrapper with fluent API and externalized SQL support")
         url.set("https://github.com/vemikrs/seasar-batis")
         licenses {
             license {

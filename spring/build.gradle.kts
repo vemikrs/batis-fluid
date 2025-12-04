@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "jp.vemi"
-version = "0.0.1"
+version = "0.0.2"
 
 sourceSets {
     named("main") {
@@ -21,20 +21,20 @@ repositories { mavenCentral() }
 
 dependencies {
     api(project(":lib"))
-    api("org.springframework.boot:spring-boot-autoconfigure:3.2.2")
-    api("org.springframework:spring-context:6.1.20")
-    api("org.springframework:spring-beans:6.1.20")
-    api("org.mybatis:mybatis-spring:3.0.3")
+    api("org.springframework.boot:spring-boot-autoconfigure:3.5.8")
+    api("org.springframework:spring-context:6.2.12")
+    api("org.springframework:spring-beans:6.2.12")
+    api("org.mybatis:mybatis-spring:3.0.5")
 
     // Align Spring 6.x
-    implementation("org.springframework:spring-tx:6.1.20")
-    implementation("org.springframework:spring-jdbc:6.1.20")
+    implementation("org.springframework:spring-tx:6.2.12")
+    implementation("org.springframework:spring-jdbc:6.2.12")
 
-    testImplementation("org.springframework.boot:spring-boot-starter-test:3.2.2")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.0")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.11.0")
+    testImplementation("org.springframework.boot:spring-boot-starter-test:3.5.8")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.12.1")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.12.1")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testImplementation("com.h2database:h2:2.2.224")
+    testImplementation("com.h2database:h2:2.4.240")
 }
 
 java {
@@ -67,10 +67,10 @@ tasks.withType<Javadoc>().configureEach {
 mavenPublishing {
     publishToMavenCentral(com.vanniktech.maven.publish.SonatypeHost.CENTRAL_PORTAL)
     signAllPublications()
-    coordinates("jp.vemi", "seasar-batis-spring", version.toString())
+    coordinates("jp.vemi", "batis-fluid-spring", version.toString())
     pom {
-        name.set("SeasarBatis Spring Integration")
-        description.set("Spring Framework integration module for SeasarBatis")
+        name.set("BatisFluid Spring Integration")
+        description.set("Spring Framework integration module for BatisFluid")
         url.set("https://github.com/vemikrs/seasar-batis")
         licenses {
             license {
@@ -95,5 +95,10 @@ mavenPublishing {
 
 // Duplicate resources handling (Gradle 9 requires explicit strategy on duplicates)
 tasks.named<org.gradle.language.jvm.tasks.ProcessResources>("processResources").configure {
+    duplicatesStrategy = org.gradle.api.file.DuplicatesStrategy.EXCLUDE
+}
+
+// Configure sourcesJar task to handle duplicates
+tasks.named<org.gradle.jvm.tasks.Jar>("sourcesJar").configure {
     duplicatesStrategy = org.gradle.api.file.DuplicatesStrategy.EXCLUDE
 }
