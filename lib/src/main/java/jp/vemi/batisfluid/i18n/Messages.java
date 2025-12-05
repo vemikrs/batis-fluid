@@ -1,17 +1,15 @@
 /*
  * Copyright (C) 2025 VEMI, All Rights Reserved.
  */
-package jp.vemi.seasarbatis.core.i18n;
+package jp.vemi.batisfluid.i18n;
 
 import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import jp.vemi.batisfluid.i18n.Messages;
-
 /**
- * SeasarBatisの国際化メッセージを管理するクラスです。
+ * BatisFluidの国際化メッセージを管理するクラスです。
  * <p>
  * リソースバンドルを使用してロケールに応じたメッセージを提供します。
  * デフォルトのロケールはシステムのロケールが使用され、
@@ -19,33 +17,32 @@ import jp.vemi.batisfluid.i18n.Messages;
  * </p>
  * 
  * @author H.Kurosawa
- * @version 1.0.0-beta1
- * @since 2025/01/01
- * @deprecated v0.0.2以降は {@link Messages} を使用してください。
+ * @version 0.0.2
+ * @since 0.0.2
  */
-@Deprecated(since = "0.0.2", forRemoval = true)
-public class SBMessageManager {
+public class Messages {
     
-    private static final String BUNDLE_NAME = "jp.vemi.seasarbatis.messages";
-    private static final SBMessageManager INSTANCE = new SBMessageManager();
+    private static final String BUNDLE_NAME = "jp.vemi.batisfluid.messages";
+    private static final String LEGACY_BUNDLE_NAME = "jp.vemi.seasarbatis.messages";
+    private static final Messages INSTANCE = new Messages();
     
     private Locale currentLocale;
     private ResourceBundle bundle;
     
     /**
-     * SBMessageManagerのシングルトンインスタンスを取得します。
+     * Messagesのシングルトンインスタンスを取得します。
      * 
-     * @return SBMessageManagerのインスタンス
+     * @return Messagesのインスタンス
      */
-    public static SBMessageManager getInstance() {
+    public static Messages getInstance() {
         return INSTANCE;
     }
     
     /**
-     * SBMessageManagerを構築します。
+     * Messagesを構築します。
      * デフォルトロケールで初期化されます。
      */
-    private SBMessageManager() {
+    private Messages() {
         this.currentLocale = Locale.getDefault();
         loadBundle();
     }
@@ -106,18 +103,26 @@ public class SBMessageManager {
     
     /**
      * リソースバンドルを読み込みます。
+     * 新パッケージのリソースバンドルを優先的に読み込み、
+     * 存在しない場合は旧パッケージのリソースバンドルにフォールバックします。
      */
     private void loadBundle() {
         try {
-            // デフォルトロケール(システムロケール)へのフォールバックを抑制し、
-            // 指定ロケールが見つからない場合はベース(英語)にフォールバックさせる
+            // 新パッケージのバンドルを優先
             ResourceBundle.Control noDefaultFallback = ResourceBundle.Control
                     .getNoFallbackControl(ResourceBundle.Control.FORMAT_PROPERTIES);
             bundle = ResourceBundle.getBundle(BUNDLE_NAME, currentLocale, noDefaultFallback);
         } catch (MissingResourceException e) {
-            // フォールバックとして英語のバンドルを使用
-            bundle = ResourceBundle.getBundle(BUNDLE_NAME, Locale.ENGLISH, ResourceBundle.Control
-                    .getNoFallbackControl(ResourceBundle.Control.FORMAT_PROPERTIES));
+            try {
+                // 旧パッケージのバンドルにフォールバック
+                ResourceBundle.Control noDefaultFallback = ResourceBundle.Control
+                        .getNoFallbackControl(ResourceBundle.Control.FORMAT_PROPERTIES);
+                bundle = ResourceBundle.getBundle(LEGACY_BUNDLE_NAME, currentLocale, noDefaultFallback);
+            } catch (MissingResourceException e2) {
+                // 最終フォールバックとして英語の旧バンドルを使用
+                bundle = ResourceBundle.getBundle(LEGACY_BUNDLE_NAME, Locale.ENGLISH, 
+                        ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_PROPERTIES));
+            }
         }
     }
 }

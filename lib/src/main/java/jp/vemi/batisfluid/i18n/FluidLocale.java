@@ -1,42 +1,38 @@
 /*
  * Copyright (C) 2025 VEMI, All Rights Reserved.
  */
-package jp.vemi.seasarbatis.core.i18n;
+package jp.vemi.batisfluid.i18n;
 
 import java.util.Locale;
 
-import jp.vemi.batisfluid.i18n.FluidLocale;
-
 /**
- * SeasarBatisの国際化設定を管理するクラスです。
+ * BatisFluidの国際化設定を管理するクラスです。
  * <p>
  * ロケールの設定や国際化に関する設定を一元管理します。
  * アプリケーション全体で共通のロケール設定を提供します。
  * </p>
  * 
  * @author H.Kurosawa
- * @version 1.0.0-beta1
- * @since 2025/01/01
- * @deprecated v0.0.2以降は {@link FluidLocale} を使用してください。
+ * @version 0.0.2
+ * @since 0.0.2
  */
-@Deprecated(since = "0.0.2", forRemoval = true)
-public class SBLocaleConfig {
+public class FluidLocale {
     
-    private static final SBLocaleConfig INSTANCE = new SBLocaleConfig();
+    private static final FluidLocale INSTANCE = new FluidLocale();
     
     /**
-     * SBLocaleConfigのシングルトンインスタンスを取得します。
+     * FluidLocaleのシングルトンインスタンスを取得します。
      * 
-     * @return SBLocaleConfigのインスタンス
+     * @return FluidLocaleのインスタンス
      */
-    public static SBLocaleConfig getInstance() {
+    public static FluidLocale getInstance() {
         return INSTANCE;
     }
     
     /**
-     * SBLocaleConfigを構築します。
+     * FluidLocaleを構築します。
      */
-    private SBLocaleConfig() {
+    private FluidLocale() {
     }
     
     /**
@@ -45,7 +41,7 @@ public class SBLocaleConfig {
      * @param locale 設定するロケール
      */
     public void setLocale(Locale locale) {
-        SBMessageManager.getInstance().setLocale(locale);
+        Messages.getInstance().setLocale(locale);
     }
     
     /**
@@ -54,7 +50,7 @@ public class SBLocaleConfig {
      * @return 現在のロケール
      */
     public Locale getCurrentLocale() {
-        return SBMessageManager.getInstance().getCurrentLocale();
+        return Messages.getInstance().getCurrentLocale();
     }
     
     /**
