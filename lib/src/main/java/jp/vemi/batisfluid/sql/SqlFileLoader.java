@@ -1,22 +1,24 @@
 /*
- * Copyright(c) 2025 VEMIDaS, All rights reserved.
+ * Copyright (C) 2025 VEMI, All Rights Reserved.
  */
-package jp.vemi.seasarbatis.core.sql.loader;
+package jp.vemi.batisfluid.sql;
 
 import java.io.IOException;
 import java.io.Reader;
 
 import org.apache.ibatis.io.Resources;
 
-import jp.vemi.batisfluid.sql.SqlFileLoader;
-
 /**
  * SQLファイルを読み込むためのユーティリティクラスです。
+ * <p>
+ * クラスパスからSQLファイルを読み込み、文字列として返します。
+ * </p>
  *
- * @deprecated v0.0.2以降は {@link SqlFileLoader} を使用してください。
+ * @author H.Kurosawa
+ * @version 0.0.2
  */
-@Deprecated(since = "0.0.2", forRemoval = true)
-public class SBSqlFileLoader {
+public class SqlFileLoader {
+    
     /**
      * 指定されたパスのSQLファイルを読み込みます。
      *

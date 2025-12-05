@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2025 VEMI, All Rights Reserved.
  */
-package jp.vemi.seasarbatis.core.sql.processor;
+package jp.vemi.batisfluid.sql;
 
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
@@ -17,39 +17,39 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
-import jp.vemi.batisfluid.sql.SqlParser;
-import jp.vemi.seasarbatis.core.sql.ParsedSql;
-import jp.vemi.seasarbatis.exception.SBSqlParseException;
+import jp.vemi.batisfluid.exception.SqlParseException;
 
 /**
  * SQLの解析とバインドパラメータの解決を行うクラスです。
  * 
  * <p>
- * S2JDBC形式のSQLコメントを解析し、MyBatisで実行可能なSQLに変換します。 この変換では以下の処理を行います：
+ * S2JDBC形式のSQLコメントを解析し、MyBatisで実行可能なSQLに変換します。
+ * この変換では以下の処理を行います：
+ * </p>
  * <ul>
  * <li>IF条件コメントの評価による動的SQL生成</li>
  * <li>バインド変数コメントの解決</li>
  * <li>BEGIN/ENDブロックの処理</li>
  * </ul>
- * </p>
  * 
  * @author H.Kurosawa
- * @version 1.0.0
- * @since 2025/01/01
- * @deprecated v0.0.2以降は {@link SqlParser} を使用してください。
+ * @version 0.0.2
  */
-@Deprecated(since = "0.0.2", forRemoval = true)
-public class SBSqlParser {
+public class SqlParser {
+    
     /**
      * SQLを解析し、実行可能な形式に変換します。
      * 
      * <p>
      * 以下の順序で処理を行います：
+     * </p>
      * <ol>
      * <li>IF条件コメントを評価し、条件に応じてSQL文を構築</li>
      * <li>バインド変数コメントをMyBatisの#{param}形式に変換</li>
      * </ol>
-     * コメントの後に続く値は、型推論のためのダミー値として扱われ、 実際のSQLからは除去されます。
+     * <p>
+     * コメントの後に続く値は、型推論のためのダミー値として扱われ、
+     * 実際のSQLからは除去されます。
      * </p>
      *
      * @param sql SQLクエリ文字列
@@ -154,10 +154,7 @@ public class SBSqlParser {
 
             String joined = String.join(", ", placeholders);
             String segment = shouldWrapWithParentheses() ? "(" + joined + ")" : joined;
-            return new RenderOutput(segment,
-                    names,
-                    true,
-                    expandedValues);
+            return new RenderOutput(segment, names, true, expandedValues);
         }
 
         private boolean shouldWrapWithParentheses() {
@@ -207,10 +204,7 @@ public class SBSqlParser {
             if (!content.dynamic && ("WHERE 1=1".equals(normalized) || "WHERE 1 = 1".equals(normalized))) {
                 return RenderOutput.EMPTY;
             }
-            return new RenderOutput(content.sql,
-                    content.parameterNames,
-                    content.dynamic,
-                    content.parameterValues);
+            return new RenderOutput(content.sql, content.parameterNames, content.dynamic, content.parameterValues);
         }
     }
 
@@ -230,10 +224,7 @@ public class SBSqlParser {
                 return RenderOutput.EMPTY;
             }
             RenderOutput content = renderChildren(children, parameters);
-            return new RenderOutput(content.sql,
-                    content.parameterNames,
-                    true,
-                    content.parameterValues);
+            return new RenderOutput(content.sql, content.parameterNames, true, content.parameterValues);
         }
     }
 
@@ -321,7 +312,7 @@ public class SBSqlParser {
                     flushText(nodes, textBuffer);
                     int commentEnd = sql.indexOf("*/", index + 2);
                     if (commentEnd < 0) {
-                        throw new SBSqlParseException("SQLコメントが正しく閉じられていません");
+                        throw new SqlParseException("SQLコメントが正しく閉じられていません");
                     }
                     String body = sql.substring(index + 2, commentEnd).trim();
                     index = commentEnd + 2;
@@ -331,7 +322,7 @@ public class SBSqlParser {
                         nodes.add(new BeginNode(children));
                     } else if ("END".equals(upperBody)) {
                         if (!inBlock) {
-                            throw new SBSqlParseException("対応するBEGIN/IFが存在しません: " + sql);
+                            throw new SqlParseException("対応するBEGIN/IFが存在しません: " + sql);
                         }
                         return nodes;
                     } else if (upperBody.startsWith("IF ")) {
@@ -347,7 +338,7 @@ public class SBSqlParser {
                 }
             }
             if (inBlock) {
-                throw new SBSqlParseException("/*END*/ が不足しています: " + sql);
+                throw new SqlParseException("/*END*/ が不足しています: " + sql);
             }
             flushText(nodes, textBuffer);
             return nodes;
@@ -366,7 +357,7 @@ public class SBSqlParser {
 
         private Node parsePlaceholderNode(String body) {
             if (body.isEmpty()) {
-                throw new SBSqlParseException("空のSQLコメントが存在します: " + sql);
+                throw new SqlParseException("空のSQLコメントが存在します: " + sql);
             }
             String name = body.trim();
             String defaultLiteral = captureDefaultLiteral();
@@ -448,7 +439,7 @@ public class SBSqlParser {
 
         private static boolean evaluate(String expression, Map<String, Object> parameters) {
             if (expression == null || expression.trim().isEmpty()) {
-                throw new SBSqlParseException("空の条件式が指定されました");
+                throw new SqlParseException("空の条件式が指定されました");
             }
             ConditionEvaluator evaluator = new ConditionEvaluator(expression, parameters);
             boolean result = evaluator.parseOr();
@@ -456,10 +447,10 @@ public class SBSqlParser {
             if (!evaluator.isEnd()) {
                 String remaining = evaluator.expression.substring(evaluator.index).trim();
                 if (!remaining.isEmpty()) {
-                    throw new SBSqlParseException(
+                    throw new SqlParseException(
                             "条件式の解析に失敗しました: " + expression + " (未処理: " + remaining + ")");
                 }
-                throw new SBSqlParseException("条件式の解析に失敗しました: " + expression);
+                throw new SqlParseException("条件式の解析に失敗しました: " + expression);
             }
             return result;
         }
@@ -498,7 +489,7 @@ public class SBSqlParser {
                 boolean value = parseOr();
                 skipWhitespace();
                 if (!match(')')) {
-                    throw new SBSqlParseException("括弧が閉じられていません: " + expression);
+                    throw new SqlParseException("括弧が閉じられていません: " + expression);
                 }
                 return value;
             }
@@ -508,14 +499,14 @@ public class SBSqlParser {
         private boolean parseComparison() {
             String leftIdentifier = parseIdentifier();
             if (leftIdentifier == null || leftIdentifier.isEmpty()) {
-                throw new SBSqlParseException("条件式の左辺が不正です: " + expression);
+                throw new SqlParseException("条件式の左辺が不正です: " + expression);
             }
 
             skipWhitespace();
             if (matchKeyword("IS")) {
                 boolean not = matchKeyword("NOT");
                 if (!matchKeyword("NULL")) {
-                    throw new SBSqlParseException("NULL 判定の構文が不正です: " + expression);
+                    throw new SqlParseException("NULL 判定の構文が不正です: " + expression);
                 }
                 Object value = getParameter(leftIdentifier);
                 return not ? value != null : value == null;
@@ -523,7 +514,7 @@ public class SBSqlParser {
 
             String operator = parseOperator();
             if (operator == null) {
-                throw new SBSqlParseException("演算子が見つかりません: " + expression);
+                throw new SqlParseException("演算子が見つかりません: " + expression);
             }
             skipWhitespace();
             ConditionValue rightValue = parseValue();
@@ -544,7 +535,7 @@ public class SBSqlParser {
             case "<=":
                 return compareFlexible(leftValue, rightValue.value) <= 0;
             default:
-                throw new SBSqlParseException("未サポートの演算子です: " + operator);
+                throw new SqlParseException("未サポートの演算子です: " + operator);
             }
         }
 
@@ -604,7 +595,7 @@ public class SBSqlParser {
         private ConditionValue parseValue() {
             skipWhitespace();
             if (isEnd()) {
-                throw new SBSqlParseException("右辺の値が不足しています: " + expression);
+                throw new SqlParseException("右辺の値が不足しています: " + expression);
             }
             char c = expression.charAt(index);
             if (c == '\'') {
@@ -617,7 +608,7 @@ public class SBSqlParser {
             }
             String word = parseIdentifier();
             if (word == null) {
-                throw new SBSqlParseException("右辺の値を解析できません: " + expression);
+                throw new SqlParseException("右辺の値を解析できません: " + expression);
             }
             String lower = word.toLowerCase(Locale.ROOT);
             switch (lower) {
@@ -634,8 +625,7 @@ public class SBSqlParser {
         }
 
         private String parseQuotedString() {
-            int start = index + 1;
-            int pos = start;
+            int pos = index + 1;
             StringBuilder sb = new StringBuilder();
             while (pos < expression.length()) {
                 char c = expression.charAt(pos);

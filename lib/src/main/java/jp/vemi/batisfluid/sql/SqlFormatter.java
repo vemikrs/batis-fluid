@@ -1,23 +1,26 @@
 /*
- * Copyright(c) 2025 VEMI, All Rights Reserved.
+ * Copyright (C) 2025 VEMI, All Rights Reserved.
  */
-package jp.vemi.seasarbatis.core.sql;
-
-import jp.vemi.batisfluid.sql.SqlFormatter;
+package jp.vemi.batisfluid.sql;
 
 /**
- * SQL文を整形するユーティリティクラス。
+ * SQL文を整形するユーティリティクラスです。
+ * <p>
+ * 生成されたSQLを見やすく整形するための機能を提供します。
+ * </p>
  *
- * @deprecated v0.0.2以降は {@link SqlFormatter} を使用してください。
+ * @author H.Kurosawa
+ * @version 0.0.2
  */
-@Deprecated(since = "0.0.2", forRemoval = true)
-public class SBSqlFormatter {
+public class SqlFormatter {
 
     /**
      * SQL文をシンプルに整形します。
-     * - 複数のホワイトスペースを1つに統一
-     * - 複数行の改行を1行に統一
-     * - ホワイトスペースのみの行を削除
+     * <ul>
+     * <li>複数のホワイトスペースを1つに統一</li>
+     * <li>複数行の改行を1行に統一</li>
+     * <li>ホワイトスペースのみの行を削除</li>
+     * </ul>
      *
      * @param sql 整形前のSQL文
      * @return 整形後のSQL文
