@@ -11,7 +11,11 @@ import java.util.Map;
 /**
  * 複合的なWHERE句を構築するためのクラス。
  * 複数のWhere条件をAND/ORで結合できます。
+ * 
+ * @deprecated このクラスは将来のバージョンで削除予定です。
+ *             代わりに {@link jp.vemi.batisfluid.query.ComplexWhere} を使用してください。
  */
+@Deprecated(since = "0.0.2", forRemoval = true)
 public class ComplexWhere extends AbstractWhere<ComplexWhere> {
 
     private final List<SBWhere> wheres = new ArrayList<>();

@@ -1,15 +1,17 @@
 /*
- * Copyright(c) 2025 VEMI, All rights reserved.
+ * Copyright (C) 2025 VEMI, All Rights Reserved.
  */
-package jp.vemi.seasarbatis.core.criteria;
+package jp.vemi.batisfluid.query;
 
 /**
  * ORDER BY句のソート方向を表す列挙型。
- * 
- * @deprecated この列挙型は将来のバージョンで削除予定です。
- *             代わりに {@link jp.vemi.batisfluid.query.OrderDirection} を使用してください。
+ * <p>
+ * SQL文でのソート順序（昇順/降順）を定義します。
+ * </p>
+ *
+ * @version 0.0.2
+ * @author BatisFluid
  */
-@Deprecated(since = "0.0.2", forRemoval = true)
 public enum OrderDirection {
     /** 昇順 */
     ASC("ASC"),
@@ -25,7 +27,7 @@ public enum OrderDirection {
     /**
      * SQL文で使用する文字列表現を取得します。
      * 
-     * @return SQL文で使用する文字列
+     * @return SQL文で使用する文字列（"ASC" または "DESC"）
      */
     public String toSql() {
         return sql;

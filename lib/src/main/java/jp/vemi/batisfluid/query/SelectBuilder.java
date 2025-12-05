@@ -1,9 +1,9 @@
 /*
- * Copyright(c) 2025 VEMI, All Rights Reserved.
+ * Copyright (C) 2025 VEMI, All Rights Reserved.
  */
-package jp.vemi.seasarbatis.core.builder;
+package jp.vemi.batisfluid.query;
 
-import static jp.vemi.seasarbatis.core.entity.SBEntityOperations.getTableName;
+import static jp.vemi.batisfluid.entity.EntityOperations.getTableName;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,36 +11,43 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import jp.vemi.seasarbatis.core.criteria.OrderDirection;
-import jp.vemi.seasarbatis.core.criteria.SBWhere;
-import jp.vemi.seasarbatis.core.criteria.SimpleWhere;
-import jp.vemi.seasarbatis.core.sql.SBSqlFormatter;
-import jp.vemi.seasarbatis.exception.SBNonUniqueResultException;
+import jp.vemi.batisfluid.exception.NonUniqueResultException;
+import jp.vemi.batisfluid.sql.SqlFormatter;
 import jp.vemi.seasarbatis.jdbc.SBJdbcManager;
 
 /**
- * SELECT文を構築するビルダークラス。 Fluent interfaceパターンでSELECT文を組み立てます。
- * 
+ * SELECT文を構築するビルダークラス。
+ * <p>
+ * Fluent interfaceパターンでSELECT文を組み立てます。
+ * </p>
+ *
+ * <pre>
+ * 使用例:
+ * List&lt;User&gt; users = selectBuilder
+ *     .where(w -&gt; w.eq("status", "ACTIVE"))
+ *     .orderBy("created_at", OrderDirection.DESC)
+ *     .getResultList();
+ * </pre>
+ *
  * @param <E> エンティティの型
- * @deprecated このクラスは将来のバージョンで削除予定です。
- *             代わりに {@link jp.vemi.batisfluid.query.SelectBuilder} を使用してください。
+ * @version 0.0.2
+ * @author BatisFluid
  */
-@Deprecated(since = "0.0.2", forRemoval = true)
-public class SBSelectBuilder<E> implements SBWhereCapable<SBSelectBuilder<E>>, SBOrderByCapable<SBSelectBuilder<E>> {
+public class SelectBuilder<E> implements WhereCapable<SelectBuilder<E>>, OrderByCapable<SelectBuilder<E>> {
 
     private final SBJdbcManager jdbcManager;
     private final Class<E> entityClass;
-    private SBWhere where;
+    private Where where;
     private final List<String> orderByList = new ArrayList<>();
     private final Map<String, Object> parameters = new HashMap<>();
 
     /**
      * コンストラクタ
-     * 
+     *
      * @param jdbcManager JDBCマネージャー
      * @param entityClass エンティティのクラス
      */
-    public SBSelectBuilder(SBJdbcManager jdbcManager, Class<E> entityClass) {
+    public SelectBuilder(SBJdbcManager jdbcManager, Class<E> entityClass) {
         this.jdbcManager = jdbcManager;
         this.entityClass = entityClass;
     }
@@ -59,7 +66,7 @@ public class SBSelectBuilder<E> implements SBWhereCapable<SBSelectBuilder<E>>, S
             sql.append(" ORDER BY ").append(String.join(", ", orderByList));
         }
 
-        return SBSqlFormatter.simplify(sql.toString());
+        return SqlFormatter.simplify(sql.toString());
     }
 
     @Override
@@ -68,32 +75,32 @@ public class SBSelectBuilder<E> implements SBWhereCapable<SBSelectBuilder<E>>, S
     }
 
     @Override
-    public SBSelectBuilder<E> where(Consumer<SBWhere> consumer) {
-        SBWhere newWhere = new SimpleWhere();
+    public SelectBuilder<E> where(Consumer<Where> consumer) {
+        Where newWhere = new SimpleWhere();
         consumer.accept(newWhere);
         return where(newWhere);
     }
 
     @Override
-    public SBSelectBuilder<E> where(SBWhere where) {
+    public SelectBuilder<E> where(Where where) {
         this.where = where;
         return this;
     }
 
     @Override
-    public SBSelectBuilder<E> orderBy(String column) {
+    public SelectBuilder<E> orderBy(String column) {
         return orderBy(column, OrderDirection.ASC);
     }
 
     @Override
-    public SBSelectBuilder<E> orderBy(String column, OrderDirection direction) {
+    public SelectBuilder<E> orderBy(String column, OrderDirection direction) {
         orderByList.add(column + " " + direction.name());
         return this;
     }
 
     /**
      * クエリを実行し、結果のリストを返します。
-     * 
+     *
      * @return エンティティのリスト
      */
     public List<E> getResultList() {
@@ -102,9 +109,9 @@ public class SBSelectBuilder<E> implements SBWhereCapable<SBSelectBuilder<E>>, S
 
     /**
      * クエリを実行し、単一の結果を返します。
-     * 
+     *
      * @return エンティティ。結果が存在しない場合はnull
-     * @throws SBNonUniqueResultException 複数の結果が存在する場合
+     * @throws NonUniqueResultException 複数の結果が存在する場合
      */
     public E getSingleResult() {
         List<E> results = getResultList();
@@ -112,7 +119,7 @@ public class SBSelectBuilder<E> implements SBWhereCapable<SBSelectBuilder<E>>, S
             return null;
         }
         if (results.size() > 1) {
-            throw new SBNonUniqueResultException("複数の結果が見つかりました。" + results.size() + "件");
+            throw new NonUniqueResultException("複数の結果が見つかりました。" + results.size() + "件");
         }
         return results.get(0);
     }

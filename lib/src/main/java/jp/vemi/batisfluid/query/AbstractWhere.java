@@ -1,7 +1,7 @@
 /*
- * Copyright(c) 2025 VEMIDaS, All rights reserved.
+ * Copyright (C) 2025 VEMI, All Rights Reserved.
  */
-package jp.vemi.seasarbatis.core.criteria;
+package jp.vemi.batisfluid.query;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -10,18 +10,32 @@ import java.util.Map;
 
 /**
  * WHERE句構築の抽象基底クラス。
- * 
- * @param <T> 自身の型（流暢なAPIのため）
- * @deprecated このクラスは将来のバージョンで削除予定です。
- *             代わりに {@link jp.vemi.batisfluid.query.AbstractWhere} を使用してください。
+ * <p>
+ * 各種条件式のメソッドを実装し、サブクラスで拡張可能な構造を提供します。
+ * </p>
+ *
+ * @param <T> 自身の型（Fluent API）
+ * @version 0.0.2
+ * @author BatisFluid
  */
-@Deprecated(since = "0.0.2", forRemoval = true)
-public class AbstractWhere<T extends AbstractWhere<T>> implements SBWhere {
+public class AbstractWhere<T extends AbstractWhere<T>> implements Where {
 
+    /** 条件式のリスト */
     protected final List<String> conditions = new ArrayList<>();
+
+    /** バインドパラメータのマップ */
     protected final Map<String, Object> parameters = new LinkedHashMap<>();
+
+    /** パラメータインデックス */
     private int parameterIndex = 0;
 
+    /**
+     * 条件を追加します。
+     * 
+     * @param condition 条件式
+     * @param params    パラメータ
+     * @return このインスタンス
+     */
     @SuppressWarnings("unchecked")
     protected T addCondition(String condition, Object... params) {
         conditions.add(condition);
@@ -177,7 +191,7 @@ public class AbstractWhere<T extends AbstractWhere<T>> implements SBWhere {
     }
 
     @Override
-    public SBWhere and(SBWhere where) {
+    public Where and(Where where) {
         if (where != null && where.hasConditions()) {
             String whereSql = where.getWhereSql().replace("WHERE", "");
             addCondition("(" + whereSql + ")");
@@ -187,7 +201,7 @@ public class AbstractWhere<T extends AbstractWhere<T>> implements SBWhere {
     }
 
     @Override
-    public SBWhere or(SBWhere where) {
+    public Where or(Where where) {
         if (where != null && where.hasConditions()) {
             conditions.add("OR");
             String whereSql = where.getWhereSql().replace("WHERE", "");
@@ -198,85 +212,43 @@ public class AbstractWhere<T extends AbstractWhere<T>> implements SBWhere {
     }
 
     @Override
-    public SBWhere and(String column, Object value) {
+    public Where and(String column, Object value) {
         return and(column, value, true);
     }
 
     @Override
-    public SBWhere or(String column, Object value) {
+    public Where or(String column, Object value) {
         return or(column, value, true);
     }
 
     @Override
-    public SBWhere and(String column, Object value, boolean isAdd) {
-        return and(column, value, isAdd, false);
-    }
-
-    @Override
-    public SBWhere or(String column, Object value, boolean isAdd) {
-        return or(column, value, isAdd, false);
-    }
-
-    @Override
-    public SBWhere and(String column, Object value, boolean isAdd, boolean isOr) {
-        return and(column, value, isAdd, isOr, false);
-    }
-
-    @Override
-    public SBWhere or(String column, Object value, boolean isAdd, boolean isOr) {
-        return or(column, value, isAdd, isOr, false);
-    }
-
-    @Override
-    public SBWhere and(String column, Object value, boolean isAdd, boolean isOr, boolean isNot) {
-        return and(column, value, isAdd, isOr, isNot, true);
-    }
-
-    @Override
-    public SBWhere or(String column, Object value, boolean isAdd, boolean isOr, boolean isNot) {
-        return or(column, value, isAdd, isOr, isNot, true);
-    }
-
-    @Override
-    public SBWhere and(String column, Object value, boolean isAdd, boolean isOr, boolean isNot, boolean isAnd) {
+    public Where and(String column, Object value, boolean isAdd) {
         if (!isAdd || value == null) {
             return this;
         }
 
         StringBuilder condition = new StringBuilder();
-        if (!conditions.isEmpty() && isAnd) {
+        if (!conditions.isEmpty()) {
             condition.append("AND ");
-        }
-        if (isNot) {
-            condition.append("NOT ");
         }
         condition.append(column).append(" = /*param").append(parameterIndex).append("*/0");
 
-        if (isOr) {
-            conditions.add("OR");
-        }
         addCondition(condition.toString(), value);
         return this;
     }
 
     @Override
-    public SBWhere or(String column, Object value, boolean isAdd, boolean isOr, boolean isNot, boolean isAnd) {
+    public Where or(String column, Object value, boolean isAdd) {
         if (!isAdd || value == null) {
             return this;
         }
 
         StringBuilder condition = new StringBuilder();
-        if (!conditions.isEmpty() && !isAnd) {
+        if (!conditions.isEmpty()) {
             condition.append("OR ");
-        }
-        if (isNot) {
-            condition.append("NOT ");
         }
         condition.append(column).append(" = /*param").append(parameterIndex).append("*/0");
 
-        if (isOr) {
-            conditions.add("OR");
-        }
         addCondition(condition.toString(), value);
         return this;
     }

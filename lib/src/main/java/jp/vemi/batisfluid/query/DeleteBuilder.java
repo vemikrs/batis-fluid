@@ -1,40 +1,47 @@
 /*
- * Copyright(c) 2025 VEMI, All Rights Reserved.
+ * Copyright (C) 2025 VEMI, All Rights Reserved.
  */
-package jp.vemi.seasarbatis.core.builder;
+package jp.vemi.batisfluid.query;
 
-import static jp.vemi.seasarbatis.core.entity.SBEntityOperations.getTableName;
+import static jp.vemi.batisfluid.entity.EntityOperations.getTableName;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import jp.vemi.seasarbatis.core.criteria.SBWhere;
-import jp.vemi.seasarbatis.core.criteria.SimpleWhere;
 import jp.vemi.seasarbatis.jdbc.SBJdbcManager;
 
 /**
- * DELETE文を構築するビルダークラス。 Fluent interfaceパターンでDELETE文を組み立てます。
- * 
+ * DELETE文を構築するビルダークラス。
+ * <p>
+ * Fluent interfaceパターンでDELETE文を組み立てます。
+ * </p>
+ *
+ * <pre>
+ * 使用例:
+ * int deletedCount = deleteBuilder
+ *     .where(w -&gt; w.eq("status", "DELETED"))
+ *     .execute();
+ * </pre>
+ *
  * @param <E> エンティティの型
- * @deprecated このクラスは将来のバージョンで削除予定です。
- *             代わりに {@link jp.vemi.batisfluid.query.DeleteBuilder} を使用してください。
+ * @version 0.0.2
+ * @author BatisFluid
  */
-@Deprecated(since = "0.0.2", forRemoval = true)
-public class SBDeleteBuilder<E> implements SBWhereCapable<SBDeleteBuilder<E>> {
+public class DeleteBuilder<E> implements WhereCapable<DeleteBuilder<E>> {
 
     private final SBJdbcManager jdbcManager;
     private final Class<E> entityClass;
     private final Map<String, Object> parameters = new HashMap<>();
-    private SBWhere where;
+    private Where where;
 
     /**
      * コンストラクタ
-     * 
+     *
      * @param jdbcManager JDBCマネージャー
      * @param entityClass エンティティのクラス
      */
-    public SBDeleteBuilder(SBJdbcManager jdbcManager, Class<E> entityClass) {
+    public DeleteBuilder(SBJdbcManager jdbcManager, Class<E> entityClass) {
         this.jdbcManager = jdbcManager;
         this.entityClass = entityClass;
     }
@@ -58,21 +65,21 @@ public class SBDeleteBuilder<E> implements SBWhereCapable<SBDeleteBuilder<E>> {
     }
 
     @Override
-    public SBDeleteBuilder<E> where(Consumer<SBWhere> consumer) {
-        SimpleWhere newWhere = new SimpleWhere();
+    public DeleteBuilder<E> where(Consumer<Where> consumer) {
+        Where newWhere = new SimpleWhere();
         consumer.accept(newWhere);
         return where(newWhere);
     }
 
     @Override
-    public SBDeleteBuilder<E> where(SBWhere where) {
+    public DeleteBuilder<E> where(Where where) {
         this.where = where;
         return this;
     }
 
     /**
      * DELETE文を実行します。
-     * 
+     *
      * @return 削除された行数
      */
     public int execute() {

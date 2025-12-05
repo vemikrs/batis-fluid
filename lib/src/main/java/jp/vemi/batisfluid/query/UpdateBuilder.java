@@ -1,54 +1,63 @@
 /*
- * Copyright(c) 2025 VEMI, All Rights Reserved.
+ * Copyright (C) 2025 VEMI, All Rights Reserved.
  */
-package jp.vemi.seasarbatis.core.builder;
-import static jp.vemi.seasarbatis.core.entity.SBEntityOperations.getTableName;
+package jp.vemi.batisfluid.query;
+
+import static jp.vemi.batisfluid.entity.EntityOperations.getTableName;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import jp.vemi.seasarbatis.core.criteria.SBWhere;
-import jp.vemi.seasarbatis.core.criteria.SimpleWhere;
 import jp.vemi.seasarbatis.jdbc.SBJdbcManager;
 
 /**
  * UPDATE文を構築するビルダークラス。
+ * <p>
  * Fluent interfaceパターンでUPDATE文を組み立てます。
- * 
+ * </p>
+ *
+ * <pre>
+ * 使用例:
+ * int updatedCount = updateBuilder
+ *     .set("status", "INACTIVE")
+ *     .set("updated_at", LocalDateTime.now())
+ *     .where(w -&gt; w.eq("id", userId))
+ *     .execute();
+ * </pre>
+ *
  * @param <E> エンティティの型
- * @deprecated このクラスは将来のバージョンで削除予定です。
- *             代わりに {@link jp.vemi.batisfluid.query.UpdateBuilder} を使用してください。
+ * @version 0.0.2
+ * @author BatisFluid
  */
-@Deprecated(since = "0.0.2", forRemoval = true)
-public class SBUpdateBuilder<E> implements SBWhereCapable<SBUpdateBuilder<E>> {
+public class UpdateBuilder<E> implements WhereCapable<UpdateBuilder<E>> {
 
     private final SBJdbcManager jdbcManager;
     private final Class<E> entityClass;
     private final Map<String, Object> setValues = new LinkedHashMap<>();
     private final Map<String, Object> parameters = new HashMap<>();
-    private SBWhere where;
+    private Where where;
 
     /**
      * コンストラクタ
-     * 
+     *
      * @param jdbcManager JDBCマネージャー
      * @param entityClass エンティティのクラス
      */
-    public SBUpdateBuilder(SBJdbcManager jdbcManager, Class<E> entityClass) {
+    public UpdateBuilder(SBJdbcManager jdbcManager, Class<E> entityClass) {
         this.jdbcManager = jdbcManager;
         this.entityClass = entityClass;
     }
 
     /**
      * 更新するカラムと値を設定します。
-     * 
+     *
      * @param column カラム名
      * @param value  設定値
      * @return このビルダーインスタンス
      */
-    public SBUpdateBuilder<E> set(String column, Object value) {
+    public UpdateBuilder<E> set(String column, Object value) {
         setValues.put(column, value);
         return this;
     }
@@ -87,21 +96,21 @@ public class SBUpdateBuilder<E> implements SBWhereCapable<SBUpdateBuilder<E>> {
     }
 
     @Override
-    public SBUpdateBuilder<E> where(Consumer<SBWhere> consumer) {
-        SBWhere newWhere = new SimpleWhere();
+    public UpdateBuilder<E> where(Consumer<Where> consumer) {
+        Where newWhere = new SimpleWhere();
         consumer.accept(newWhere);
         return where(newWhere);
     }
 
     @Override
-    public SBUpdateBuilder<E> where(SBWhere where) {
+    public UpdateBuilder<E> where(Where where) {
         this.where = where;
         return this;
     }
 
     /**
      * UPDATE文を実行します。
-     * 
+     *
      * @return 更新された行数
      */
     public int execute() {
