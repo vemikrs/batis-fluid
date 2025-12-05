@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2025 VEMI, All Rights Reserved.
  */
-package jp.vemi.seasarbatis.core.transaction;
+package jp.vemi.batisfluid.transaction;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -15,24 +15,20 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jp.vemi.seasarbatis.exception.SBTransactionException;
+import jp.vemi.batisfluid.exception.TransactionException;
 
 /**
- * トランザクション操作の基本機能を提供するクラスです。
+ * トランザクション操作の基本機能を提供するクラス。
  * <p>
  * MyBatisのSqlSessionを使用した低レベルなトランザクション操作を提供します。
  * セーブポイントの作成や解放、ロールバックなどの機能も提供します。
  * </p>
- * 
- * @author H.Kurosawa
- * @version 1.0.0
- * @since 2025/01/01
- * @deprecated このクラスは将来のバージョンで削除予定です。
- *             代わりに {@link jp.vemi.batisfluid.transaction.TransactionOperation} を使用してください。
+ *
+ * @version 0.0.2
+ * @author BatisFluid
  */
-@Deprecated(since = "0.0.2", forRemoval = true)
-public class SBTransactionOperation {
-    private static final Logger logger = LoggerFactory.getLogger(SBTransactionOperation.class);
+public class TransactionOperation {
+    private static final Logger logger = LoggerFactory.getLogger(TransactionOperation.class);
 
     private final SqlSessionFactory sqlSessionFactory;
     private final ThreadLocal<SqlSession> currentSession = new ThreadLocal<>();
@@ -45,18 +41,18 @@ public class SBTransactionOperation {
      *
      * @param sqlSessionFactory SQLセッションファクトリ
      */
-    public SBTransactionOperation(SqlSessionFactory sqlSessionFactory) {
+    public TransactionOperation(SqlSessionFactory sqlSessionFactory) {
         this.sqlSessionFactory = sqlSessionFactory;
     }
 
     /**
      * 新しいトランザクションを開始します。
      *
-     * @throws SBTransactionException トランザクションが既に開始されている場合
+     * @throws TransactionException トランザクションが既に開始されている場合
      */
     public void begin() {
         if (isActive) {
-            throw new SBTransactionException("transaction.error.already.started");
+            throw new TransactionException("transaction.error.already.started");
         }
         SqlSession session = sqlSessionFactory.openSession(false);
         currentSession.set(session);
@@ -67,17 +63,17 @@ public class SBTransactionOperation {
      * 新しいトランザクションを開始します。
      *
      * @param session SqlSession
-     * @throws SBTransactionException トランザクションが既に開始されている場合
+     * @throws TransactionException トランザクションが既に開始されている場合
      */
     public void begin(SqlSession session) {
         if (isActive) {
-            throw new SBTransactionException("transaction.error.already.started");
+            throw new TransactionException("transaction.error.already.started");
         }
         currentSession.set(session);
         try {
-            SBThreadLocalDataSource.bind(session.getConnection());
+            ThreadLocalDataSource.bind(session.getConnection());
         } catch (Exception e) {
-            throw new SBTransactionException("transaction.error.execution", e);
+            throw new TransactionException("transaction.error.execution", e);
         }
         this.isActive = true;
     }
@@ -90,19 +86,17 @@ public class SBTransactionOperation {
      */
     public void beginIndependent(SqlSession session) {
         if (isActive) {
-            throw new SBTransactionException("transaction.error.already.started");
+            throw new TransactionException("transaction.error.already.started");
         }
-        // 親の BOUND 接続を使わないように一時停止した上で、新規セッションをバインド
-        SBThreadLocalDataSource.suspendBinding();
+        ThreadLocalDataSource.suspendBinding();
         try {
             currentSession.set(session);
-            SBThreadLocalDataSource.bind(session.getConnection());
+            ThreadLocalDataSource.bind(session.getConnection());
             this.isActive = true;
         } catch (Exception e) {
-            throw new SBTransactionException("transaction.error.execution", e);
+            throw new TransactionException("transaction.error.execution", e);
         } finally {
-            // このスコープ内での新規確保が完了したら復帰
-            SBThreadLocalDataSource.resumeBinding();
+            ThreadLocalDataSource.resumeBinding();
         }
     }
 
@@ -111,9 +105,8 @@ public class SBTransactionOperation {
      */
     public void commit() {
         if (!isActive) {
-            throw new SBTransactionException("transaction.error.not.started");
+            throw new TransactionException("transaction.error.not.started");
         }
-        // DefaultSqlSession は dirty=false の場合に commit をスキップするため強制コミット
         currentSession.get().commit(true);
     }
 
@@ -122,9 +115,8 @@ public class SBTransactionOperation {
      */
     public void rollback() {
         if (!isActive) {
-            throw new SBTransactionException("transaction.error.not.started");
+            throw new TransactionException("transaction.error.not.started");
         }
-        // 外側のセッションで更新していなくても、物理コネクション上の変更を確実に取り消す
         currentSession.get().rollback(true);
     }
 
@@ -138,7 +130,7 @@ public class SBTransactionOperation {
         try {
             currentSession.get().close();
         } finally {
-            SBThreadLocalDataSource.unbind();
+            ThreadLocalDataSource.unbind();
             isActive = false;
             currentSession.remove();
         }
@@ -151,7 +143,7 @@ public class SBTransactionOperation {
      */
     public SqlSession getCurrentSession() {
         if (!isActive) {
-            throw new SBTransactionException("transaction.error.not.started");
+            throw new TransactionException("transaction.error.not.started");
         }
         return currentSession.get();
     }
@@ -169,11 +161,11 @@ public class SBTransactionOperation {
      * 新しいセーブポイントを作成します。
      * 
      * @return 作成されたセーブポイントのID
-     * @throws SBTransactionException トランザクションが開始されていない場合
+     * @throws TransactionException トランザクションが開始されていない場合
      */
     public String createSavepoint() {
         if (!isActive()) {
-            throw new SBTransactionException("transaction.error.not.started");
+            throw new TransactionException("transaction.error.not.started");
         }
 
         String savepointId = UUID.randomUUID().toString();
@@ -182,7 +174,7 @@ public class SBTransactionOperation {
         try {
             savepoint = connection.setSavepoint();
         } catch (SQLException e) {
-            throw new SBTransactionException("transaction.error.savepoint.creation", e);
+            throw new TransactionException("transaction.error.savepoint.creation", e);
         }
         savepoints.put(savepointId, savepoint);
         logger.debug("セーブポイントを作成しました: {}", savepointId);
@@ -193,19 +185,19 @@ public class SBTransactionOperation {
      * 指定されたセーブポイントを解放します。
      * 
      * @param savepointId セーブポイントのID
-     * @throws SBTransactionException セーブポイントが見つからない場合
+     * @throws TransactionException セーブポイントが見つからない場合
      */
     public void releaseSavepoint(String savepointId) {
         Savepoint savepoint = savepoints.remove(savepointId);
         if (savepoint == null) {
-            throw new SBTransactionException("transaction.error.savepoint.not.found", savepointId);
+            throw new TransactionException("Savepoint not found: " + savepointId);
         }
 
         try {
             currentSession.get().getConnection().releaseSavepoint(savepoint);
             logger.debug("セーブポイントを解放しました: {}", savepointId);
         } catch (SQLException e) {
-            throw new SBTransactionException("transaction.error.savepoint.release", e, savepointId);
+            throw new TransactionException("transaction.error.savepoint.release", e);
         }
     }
 
@@ -213,19 +205,19 @@ public class SBTransactionOperation {
      * 指定されたセーブポイントまでロールバックします。
      * 
      * @param savepointId セーブポイントのID
-     * @throws SBTransactionException セーブポイントが見つからない場合
+     * @throws TransactionException セーブポイントが見つからない場合
      */
     public void rollbackToSavepoint(String savepointId) {
         Savepoint savepoint = savepoints.get(savepointId);
         if (savepoint == null) {
-            throw new SBTransactionException("transaction.error.savepoint.not.found", savepointId);
+            throw new TransactionException("Savepoint not found: " + savepointId);
         }
 
         try {
             currentSession.get().getConnection().rollback(savepoint);
             logger.debug("セーブポイントまでロールバックしました: {}", savepointId);
         } catch (SQLException e) {
-            throw new SBTransactionException("transaction.error.savepoint.rollback", e, savepointId);
+            throw new TransactionException("transaction.error.savepoint.rollback", e);
         }
     }
 }

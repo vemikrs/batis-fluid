@@ -1,35 +1,38 @@
 /*
  * Copyright (C) 2025 VEMI, All Rights Reserved.
  */
-package jp.vemi.seasarbatis.core.transaction;
+package jp.vemi.batisfluid.transaction;
 
-import jp.vemi.seasarbatis.core.i18n.SBMessageManager;
+import jp.vemi.batisfluid.i18n.Messages;
 
 /**
- * トランザクション操作のコンテキストを管理するクラスです。
+ * トランザクション操作のコンテキストを管理するクラス。
  * <p>
  * ThreadLocalを使用して、現在のスレッドのトランザクション操作を追跡します。
  * 独立トランザクションが実行される際に、一時的に異なるトランザクション操作を
  * 使用できるようにします。
  * </p>
- * 
- * @author H.Kurosawa
- * @version 1.0.0
- * @since 2025/01/01
- * @deprecated このクラスは将来のバージョンで削除予定です。
- *             代わりに {@link jp.vemi.batisfluid.transaction.TransactionContext} を使用してください。
+ *
+ * @version 0.0.2
+ * @author BatisFluid
  */
-@Deprecated(since = "0.0.2", forRemoval = true)
-public class SBTransactionContext {
+public class TransactionContext {
     
-    private static final ThreadLocal<SBTransactionOperation> currentOperation = new ThreadLocal<>();
+    private static final ThreadLocal<TransactionOperation> currentOperation = new ThreadLocal<>();
+    
+    /**
+     * プライベートコンストラクタ。
+     */
+    private TransactionContext() {
+        // ユーティリティクラス
+    }
     
     /**
      * 現在のトランザクション操作を設定します。
      * 
      * @param operation トランザクション操作
      */
-    public static void setCurrentOperation(SBTransactionOperation operation) {
+    public static void setCurrentOperation(TransactionOperation operation) {
         currentOperation.set(operation);
     }
     
@@ -38,7 +41,7 @@ public class SBTransactionContext {
      * 
      * @return 現在のトランザクション操作、設定されていない場合はnull
      */
-    public static SBTransactionOperation getCurrentOperation() {
+    public static TransactionOperation getCurrentOperation() {
         return currentOperation.get();
     }
     
@@ -57,8 +60,8 @@ public class SBTransactionContext {
      * @param action 実行する処理
      * @return 処理の結果
      */
-    public static <T> T withOperation(SBTransactionOperation operation, java.util.concurrent.Callable<T> action) {
-        SBTransactionOperation previousOperation = getCurrentOperation();
+    public static <T> T withOperation(TransactionOperation operation, java.util.concurrent.Callable<T> action) {
+        TransactionOperation previousOperation = getCurrentOperation();
         try {
             setCurrentOperation(operation);
             return action.call();
@@ -66,7 +69,7 @@ public class SBTransactionContext {
             if (e instanceof RuntimeException) {
                 throw (RuntimeException) e;
             }
-            throw new RuntimeException(SBMessageManager.getInstance().getMessage("transaction.error.processing"), e);
+            throw new RuntimeException(Messages.getInstance().getMessage("transaction.error.processing"), e);
         } finally {
             if (previousOperation != null) {
                 setCurrentOperation(previousOperation);

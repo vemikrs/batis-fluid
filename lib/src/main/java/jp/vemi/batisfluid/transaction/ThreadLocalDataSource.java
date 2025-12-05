@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2025 VEMI, All Rights Reserved.
  */
-package jp.vemi.seasarbatis.core.transaction;
+package jp.vemi.batisfluid.transaction;
 
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationHandler;
@@ -11,29 +11,25 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.Objects;
-// NOTE: getParentLogger の戻り型で FQCN を使用するため、java.util.logging.Logger の import は行いません。
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
- * スレッドローカルにバインドされたコネクションを優先的に返すDataSourceです。
+ * スレッドローカルにバインドされたコネクションを優先的に返すDataSource。
  * <p>
  * トランザクション境界内で新たに開かれる {@code SqlSessionFactory.openSession()} が
  * 常に同一の物理コネクションを共有するようにし、子セッションからの commit/rollback/close を抑制します。
  * これにより、トランザクション管理側の rollback で一括して取り消せます。
  * </p>
  *
- * @author H.Kurosawa
- * @version 1.0.0
- * @since 2025/01/01
- * @deprecated このクラスは将来のバージョンで削除予定です。
- *             代わりに {@link jp.vemi.batisfluid.transaction.ThreadLocalDataSource} を使用してください。
+ * @version 0.0.2
+ * @author BatisFluid
  */
-@Deprecated(since = "0.0.2", forRemoval = true)
-public class SBThreadLocalDataSource implements DataSource {
-    private static final Logger logger = LoggerFactory.getLogger(SBThreadLocalDataSource.class);
+public class ThreadLocalDataSource implements DataSource {
+    private static final Logger logger = LoggerFactory.getLogger(ThreadLocalDataSource.class);
 
     private final DataSource delegate;
     private static final ThreadLocal<Connection> BOUND = new ThreadLocal<>();
@@ -44,7 +40,7 @@ public class SBThreadLocalDataSource implements DataSource {
      * 
      * @param delegate 元のDataSource
      */
-    public SBThreadLocalDataSource(DataSource delegate) {
+    public ThreadLocalDataSource(DataSource delegate) {
         this.delegate = Objects.requireNonNull(delegate);
     }
 
@@ -92,9 +88,8 @@ public class SBThreadLocalDataSource implements DataSource {
         if (!isBindingSuspended()) {
             Connection bound = BOUND.get();
             if (bound != null) {
-            logger.debug("Returning BOUND suppressed connection");
-            // 子セッション向けに commit/rollback/close を無効化したプロキシを返す
-            return createSuppressedConnection(bound);
+                logger.debug("Returning BOUND suppressed connection");
+                return createSuppressedConnection(bound);
             }
         }
         logger.debug("Returning DELEGATE connection");
@@ -106,8 +101,8 @@ public class SBThreadLocalDataSource implements DataSource {
         if (!isBindingSuspended()) {
             Connection bound = BOUND.get();
             if (bound != null) {
-            logger.debug("Returning BOUND suppressed connection (with creds)");
-            return createSuppressedConnection(bound);
+                logger.debug("Returning BOUND suppressed connection (with creds)");
+                return createSuppressedConnection(bound);
             }
         }
         logger.debug("Returning DELEGATE connection (with creds)");
@@ -115,35 +110,29 @@ public class SBThreadLocalDataSource implements DataSource {
     }
 
     private Connection createSuppressedConnection(Connection target) {
-        InvocationHandler handler = new InvocationHandler() {
-            @Override
-            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                String name = method.getName();
-                // commit/rollback/close は抑制（NO-OP）
-                if ("commit".equals(name) || "rollback".equals(name) || "close".equals(name)
-                        || "setAutoCommit".equals(name)) {
-                    return null;
-                }
-                // unwrap/isWrapperFor で実コネクションへ到達されないように防御
-                if ("unwrap".equals(name) && args != null && args.length == 1 && args[0] instanceof Class) {
-                    Class<?> iface = (Class<?>) args[0];
-                    if (iface.isAssignableFrom(Connection.class)) {
-                        // 自分自身（抑制プロキシ）を返すことで、実体へのエスケープを防止
-                        return proxy;
-                    }
-                    // それ以外は素直に委譲
-                    return method.invoke(target, args);
-                }
-                if ("isWrapperFor".equals(name) && args != null && args.length == 1 && args[0] instanceof Class) {
-                    Class<?> iface = (Class<?>) args[0];
-                    if (iface.isAssignableFrom(Connection.class)) {
-                        // ラッパ解除可能と認識させない
-                        return Boolean.FALSE;
-                    }
-                    return method.invoke(target, args);
+        InvocationHandler handler = (proxy, method, args) -> {
+            String name = method.getName();
+            // commit/rollback/close は抑制（NO-OP）
+            if ("commit".equals(name) || "rollback".equals(name) || "close".equals(name)
+                    || "setAutoCommit".equals(name)) {
+                return null;
+            }
+            // unwrap/isWrapperFor で実コネクションへ到達されないように防御
+            if ("unwrap".equals(name) && args != null && args.length == 1 && args[0] instanceof Class) {
+                Class<?> iface = (Class<?>) args[0];
+                if (iface.isAssignableFrom(Connection.class)) {
+                    return proxy;
                 }
                 return method.invoke(target, args);
             }
+            if ("isWrapperFor".equals(name) && args != null && args.length == 1 && args[0] instanceof Class) {
+                Class<?> iface = (Class<?>) args[0];
+                if (iface.isAssignableFrom(Connection.class)) {
+                    return Boolean.FALSE;
+                }
+                return method.invoke(target, args);
+            }
+            return method.invoke(target, args);
         };
         return (Connection) Proxy.newProxyInstance(
                 target.getClass().getClassLoader(),
@@ -173,7 +162,7 @@ public class SBThreadLocalDataSource implements DataSource {
 
     @Override
     public java.util.logging.Logger getParentLogger() throws SQLFeatureNotSupportedException {
-        return java.util.logging.Logger.getLogger("SBThreadLocalDataSource");
+        return java.util.logging.Logger.getLogger("ThreadLocalDataSource");
     }
 
     @Override

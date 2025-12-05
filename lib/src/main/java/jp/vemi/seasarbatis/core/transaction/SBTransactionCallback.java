@@ -14,7 +14,10 @@ import jp.vemi.seasarbatis.jdbc.SBJdbcManager;
  * @author H.Kurosawa
  * @version 1.0.0
  * @since 2025/01/01
+ * @deprecated このインターフェースは将来のバージョンで削除予定です。
+ *             代わりに {@link jp.vemi.batisfluid.transaction.TransactionCallback} を使用してください。
  */
+@Deprecated(since = "0.0.2", forRemoval = true)
 @FunctionalInterface
 public interface SBTransactionCallback {
 

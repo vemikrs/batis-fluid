@@ -1,63 +1,69 @@
-package jp.vemi.seasarbatis.core.transaction;
+/*
+ * Copyright (C) 2025 VEMI, All Rights Reserved.
+ */
+package jp.vemi.batisfluid.transaction;
 
 import java.util.concurrent.Callable;
 
+import org.apache.ibatis.mapping.Environment;
+import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.ibatis.session.Configuration;
-import org.apache.ibatis.mapping.Environment;
 
-import jp.vemi.seasarbatis.exception.SBTransactionException;
+import jp.vemi.batisfluid.exception.TransactionException;
 
 /**
- * トランザクション管理の高レベルAPIを提供するクラスです。
+ * トランザクション管理の高レベルAPIを提供するクラス。
  * <p>
  * トランザクションの境界制御や伝播制御を行い、アプリケーションに
  * より使いやすいトランザクション管理機能を提供します。
- * SBTransactionOperationを内部で使用し、より高度な制御を実現します。
+ * TransactionOperationを内部で使用し、より高度な制御を実現します。
  * </p>
- * 
- * @author H.Kurosawa
- * @version 1.0.0
- * @since 2025/01/01
- * @deprecated このクラスは将来のバージョンで削除予定です。
- *             代わりに {@link jp.vemi.batisfluid.transaction.TransactionManager} を使用してください。
+ *
+ * <pre>
+ * 使用例:
+ * TransactionManager txManager = new TransactionManager(sqlSessionFactory);
+ * txManager.execute(PropagationType.REQUIRED, () -&gt; {
+ *     // トランザクション内の処理
+ *     return result;
+ * });
+ * </pre>
+ *
+ * @version 0.0.2
+ * @author BatisFluid
  */
-@Deprecated(since = "0.0.2", forRemoval = true)
-public class SBTransactionManager {
+public class TransactionManager {
     private final SqlSessionFactory sqlSessionFactory;
-    private final SBTransactionOperation txOperation;
+    private final TransactionOperation txOperation;
 
-    // トランザクション伝播タイプの定義
-    public enum PropagationType {
-        REQUIRED,    // 既存のトランザクションを使用、なければ新規作成
-        REQUIRES_NEW,// 常に新規トランザクションを作成
-        NESTED      // ネストされたトランザクションを作成
-    }
-
-    public SBTransactionManager(SqlSessionFactory sqlSessionFactory) {
+    /**
+     * TransactionManagerを構築します。
+     *
+     * @param sqlSessionFactory SQLセッションファクトリ
+     */
+    public TransactionManager(SqlSessionFactory sqlSessionFactory) {
         this.sqlSessionFactory = sqlSessionFactory;
-        // DataSource をスレッドローカル対応のラッパに差し替え（子セッションのcommit/close抑制のため）
+        // DataSource をスレッドローカル対応のラッパに差し替え
         try {
             Configuration conf = this.sqlSessionFactory.getConfiguration();
             Environment env = conf.getEnvironment();
-            if (env != null && !(env.getDataSource() instanceof SBThreadLocalDataSource)) {
+            if (env != null && !(env.getDataSource() instanceof ThreadLocalDataSource)) {
                 Environment wrapped = new Environment(env.getId(), env.getTransactionFactory(),
-                        new SBThreadLocalDataSource(env.getDataSource()));
+                        new ThreadLocalDataSource(env.getDataSource()));
                 conf.setEnvironment(wrapped);
             }
         } catch (Exception ignore) {
             // 失敗しても致命的ではない（テスト環境等での安全策）
         }
-        this.txOperation = new SBTransactionOperation(sqlSessionFactory);
+        this.txOperation = new TransactionOperation(sqlSessionFactory);
     }
 
     /**
      * 指定された伝播タイプでトランザクションを実行します。
      *
-     * @param <T> 戻り値の型
+     * @param <T>             戻り値の型
      * @param propagationType トランザクション伝播タイプ
-     * @param operation 実行する操作
+     * @param operation       実行する操作
      * @return 操作の実行結果
      */
     public <T> T execute(PropagationType propagationType, Callable<T> operation) {
@@ -69,32 +75,36 @@ public class SBTransactionManager {
             case NESTED:
                 return executeNested(operation);
             default:
-                throw new SBTransactionException("transaction.error.unsupported.propagation", propagationType);
+                throw new TransactionException("Unsupported propagation type: " + propagationType);
         }
     }
 
+    /**
+     * トランザクション内で処理を実行します。
+     *
+     * @param <T>                      戻り値の型
+     * @param isIndependentTransaction 独立したトランザクションで実行するかどうか
+     * @param operation                実行する操作
+     * @return 操作の実行結果
+     */
     public <T> T executeWithTransaction(boolean isIndependentTransaction, Callable<T> operation) {
         if (isIndependentTransaction) {
-            // 独立トランザクションの場合は新しいTransactionOperationインスタンスを作成
-            SBTransactionOperation independentTxOperation = new SBTransactionOperation(sqlSessionFactory);
+            TransactionOperation independentTxOperation = new TransactionOperation(sqlSessionFactory);
             SqlSession session = sqlSessionFactory.openSession(false);
-            // 親の BOUND を参照せず新規接続を確保・バインド
             independentTxOperation.beginIndependent(session);
             try {
-                // 独立トランザクションのコンテキストを設定して実行
-                T result = SBTransactionContext.withOperation(independentTxOperation, operation);
+                T result = TransactionContext.withOperation(independentTxOperation, operation);
                 independentTxOperation.commit();
                 return result;
             } catch (Exception e) {
                 independentTxOperation.rollback();
-                throw new SBTransactionException("transaction.error.execution", e);
+                throw new TransactionException("transaction.error.execution", e);
             } finally {
                 independentTxOperation.end();
             }
         }
 
-        // 現在のトランザクション操作（独立TX等）を優先し、未設定ならデフォルト操作を使用
-        SBTransactionOperation op = SBTransactionContext.getCurrentOperation();
+        TransactionOperation op = TransactionContext.getCurrentOperation();
         if (op == null) {
             op = txOperation;
         }
@@ -105,8 +115,7 @@ public class SBTransactionManager {
         }
 
         try {
-            // コンテキストを安全に設定して実行
-            T result = SBTransactionContext.withOperation(op, operation);
+            T result = TransactionContext.withOperation(op, operation);
             if (isNewTransaction) {
                 op.commit();
             }
@@ -115,7 +124,7 @@ public class SBTransactionManager {
             if (isNewTransaction) {
                 op.rollback();
             }
-            throw new SBTransactionException("transaction.error.execution", e);
+            throw new TransactionException("transaction.error.execution", e);
         } finally {
             if (isNewTransaction) {
                 op.end();
@@ -127,7 +136,7 @@ public class SBTransactionManager {
      * トランザクションが存在する場合はそれを使用し、
      * 存在しない場合は新規トランザクションを作成します。
      *
-     * @param <T> 戻り値の型
+     * @param <T>       戻り値の型
      * @param operation 実行する操作
      * @return 操作の実行結果
      */
@@ -138,7 +147,7 @@ public class SBTransactionManager {
     /**
      * 常に新規トランザクションを作成して実行します。
      *
-     * @param <T> 戻り値の型
+     * @param <T>       戻り値の型
      * @param operation 実行する操作
      * @return 操作の実行結果
      */
@@ -151,7 +160,7 @@ public class SBTransactionManager {
      * 現在のトランザクションがある場合はそのスコープ内で
      * セーブポイントを作成します。
      *
-     * @param <T> 戻り値の型
+     * @param <T>       戻り値の型
      * @param operation 実行する操作
      * @return 操作の実行結果
      */
@@ -167,7 +176,7 @@ public class SBTransactionManager {
             return result;
         } catch (Exception e) {
             txOperation.rollbackToSavepoint(savepoint);
-            throw new SBTransactionException("transaction.error.nested.execution", e);
+            throw new TransactionException("transaction.error.nested.execution", e);
         }
     }
 
@@ -177,8 +186,8 @@ public class SBTransactionManager {
      * @return トランザクションが活性状態の場合true
      */
     public boolean isActive() {
-        SBTransactionOperation current = SBTransactionContext.getCurrentOperation();
-        SBTransactionOperation op = (current != null) ? current : txOperation;
+        TransactionOperation current = TransactionContext.getCurrentOperation();
+        TransactionOperation op = (current != null) ? current : txOperation;
         return op.isActive();
     }
 
@@ -186,8 +195,8 @@ public class SBTransactionManager {
      * 現在のトランザクションをコミットします。
      */
     public void commit() {
-        SBTransactionOperation current = SBTransactionContext.getCurrentOperation();
-        SBTransactionOperation op = (current != null) ? current : txOperation;
+        TransactionOperation current = TransactionContext.getCurrentOperation();
+        TransactionOperation op = (current != null) ? current : txOperation;
         op.commit();
     }
 
@@ -195,8 +204,8 @@ public class SBTransactionManager {
      * 現在のトランザクションをロールバックします。
      */
     public void rollback() {
-        SBTransactionOperation current = SBTransactionContext.getCurrentOperation();
-        SBTransactionOperation op = (current != null) ? current : txOperation;
+        TransactionOperation current = TransactionContext.getCurrentOperation();
+        TransactionOperation op = (current != null) ? current : txOperation;
         op.rollback();
     }
 
@@ -205,8 +214,8 @@ public class SBTransactionManager {
      * 
      * @return トランザクション操作
      */
-    public SBTransactionOperation getTransactionOperation() {
-        SBTransactionOperation current = SBTransactionContext.getCurrentOperation();
+    public TransactionOperation getTransactionOperation() {
+        TransactionOperation current = TransactionContext.getCurrentOperation();
         return current != null ? current : txOperation;
     }
 }
