@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2025 VEMI, All Rights Reserved.
  */
-package jp.vemi.seasarbatis.exception;
+package jp.vemi.batisfluid.exception;
 
 /**
  * 楽観的排他制御に失敗した場合にスローされる例外です。
@@ -9,19 +9,12 @@ package jp.vemi.seasarbatis.exception;
  * バージョン番号やタイムスタンプによる楽観的排他制御で、
  * 更新対象のレコードが他のトランザクションによって既に更新されていた場合にスローされます。
  * </p>
- * <p>
- * <strong>非推奨：</strong> このクラスはv0.0.2で非推奨となりました。
- * 代わりに{@link jp.vemi.batisfluid.exception.OptimisticLockException}を使用してください。
- * </p>
  * 
  * @author H.Kurosawa
  * @version 0.0.2
- * @since 2025/01/01
- * @deprecated v0.0.2以降は{@link jp.vemi.batisfluid.exception.OptimisticLockException}を使用してください。
- *             このクラスはv0.0.3以降で削除される予定です。
+ * @since 0.0.2
  */
-@Deprecated(since = "0.0.2")
-public class SBOptimisticLockException extends SBException {
+public class OptimisticLockException extends FluidException {
     
     private final Object entity;
     private final String[] properties;
@@ -33,7 +26,7 @@ public class SBOptimisticLockException extends SBException {
      * @param entity 対象エンティティ
      * @param properties 更新対象のプロパティ名
      */
-    public SBOptimisticLockException(String message, Object entity, String... properties) {
+    public OptimisticLockException(String message, Object entity, String... properties) {
         super(message);
         this.entity = entity;
         this.properties = properties;
