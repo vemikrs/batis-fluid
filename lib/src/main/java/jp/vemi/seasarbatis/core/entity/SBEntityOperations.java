@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jp.vemi.batisfluid.entity.EntityOperations;
 import jp.vemi.seasarbatis.core.meta.SBColumnMeta;
 import jp.vemi.seasarbatis.core.meta.SBTableMeta;
 import jp.vemi.seasarbatis.exception.SBEntityException;
@@ -27,7 +28,9 @@ import jp.vemi.seasarbatis.exception.SBIllegalStateException;
  * @author H.Kurosawa
  * @version 1.0.0
  * @since 2025/01/01
+ * @deprecated v0.0.2以降は {@link EntityOperations} を使用してください。
  */
+@Deprecated(since = "0.0.2", forRemoval = true)
 public class SBEntityOperations {
     private static final Logger logger = LoggerFactory.getLogger(SBEntityOperations.class);
 

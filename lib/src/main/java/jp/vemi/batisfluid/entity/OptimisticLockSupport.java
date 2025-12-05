@@ -1,23 +1,21 @@
 /*
  * Copyright (C) 2025 VEMI, All Rights Reserved.
  */
-package jp.vemi.seasarbatis.core.entity;
+package jp.vemi.batisfluid.entity;
 
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.time.temporal.Temporal;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import jp.vemi.batisfluid.entity.OptimisticLockSupport;
-import jp.vemi.seasarbatis.core.config.SBOptimisticLockConfig;
-import jp.vemi.seasarbatis.core.config.SBOptimisticLockConfig.EntityLockConfig;
-import jp.vemi.seasarbatis.core.config.SBOptimisticLockConfig.LockType;
-import jp.vemi.seasarbatis.core.meta.SBColumnMeta;
-import jp.vemi.seasarbatis.exception.SBEntityException;
-import jp.vemi.seasarbatis.exception.SBIllegalStateException;
+import jp.vemi.batisfluid.config.OptimisticLockConfig;
+import jp.vemi.batisfluid.config.OptimisticLockConfig.EntityLockConfig;
+import jp.vemi.batisfluid.config.OptimisticLockConfig.LockType;
+import jp.vemi.batisfluid.meta.FluidColumn;
+import jp.vemi.batisfluid.exception.EntityException;
+import jp.vemi.batisfluid.exception.FluidIllegalStateException;
 
 /**
  * 楽観的排他制御に関するエンティティ操作を提供するユーティリティクラスです。
@@ -27,15 +25,16 @@ import jp.vemi.seasarbatis.exception.SBIllegalStateException;
  * </p>
  * 
  * @author H.Kurosawa
- * @version 1.0.0
- * @since 2025/08/23
- * @deprecated v0.0.2以降は {@link OptimisticLockSupport} を使用してください。
+ * @version 0.0.2
  */
-@Deprecated(since = "0.0.2", forRemoval = true)
-public class SBOptimisticLockSupport {
+public class OptimisticLockSupport {
     
     /**
      * エンティティからバージョンカラムの情報を取得します。
+     * <p>
+     * 新しい {@link FluidColumn} アノテーションを優先的に使用し、
+     * 存在しない場合は旧アノテーションを確認します。
+     * </p>
      * 
      * @param entity エンティティインスタンス
      * @return バージョンカラムの情報、存在しない場合はEmpty
@@ -44,14 +43,28 @@ public class SBOptimisticLockSupport {
         Class<?> entityClass = entity.getClass();
         
         for (Field field : entityClass.getDeclaredFields()) {
-            SBColumnMeta columnMeta = field.getAnnotation(SBColumnMeta.class);
+            // 新アノテーションを優先
+            FluidColumn fluidColumn = field.getAnnotation(FluidColumn.class);
+            if (fluidColumn != null && fluidColumn.versionColumn()) {
+                try {
+                    field.setAccessible(true);
+                    Object value = field.get(entity);
+                    return Optional.of(new VersionColumnInfo(field, fluidColumn.name(), value));
+                } catch (IllegalAccessException e) {
+                    throw new EntityException("entity.error.metadata", e);
+                }
+            }
+            
+            // 旧アノテーションにフォールバック
+            jp.vemi.seasarbatis.core.meta.SBColumnMeta columnMeta = 
+                field.getAnnotation(jp.vemi.seasarbatis.core.meta.SBColumnMeta.class);
             if (columnMeta != null && columnMeta.versionColumn()) {
                 try {
                     field.setAccessible(true);
                     Object value = field.get(entity);
                     return Optional.of(new VersionColumnInfo(field, columnMeta.name(), value));
                 } catch (IllegalAccessException e) {
-                    throw new SBEntityException("バージョンカラムの値取得に失敗しました: " + field.getName(), e);
+                    throw new EntityException("entity.error.metadata", e);
                 }
             }
         }
@@ -69,14 +82,28 @@ public class SBOptimisticLockSupport {
         Class<?> entityClass = entity.getClass();
         
         for (Field field : entityClass.getDeclaredFields()) {
-            SBColumnMeta columnMeta = field.getAnnotation(SBColumnMeta.class);
+            // 新アノテーションを優先
+            FluidColumn fluidColumn = field.getAnnotation(FluidColumn.class);
+            if (fluidColumn != null && fluidColumn.lastModifiedColumn()) {
+                try {
+                    field.setAccessible(true);
+                    Object value = field.get(entity);
+                    return Optional.of(new LastModifiedColumnInfo(field, fluidColumn.name(), value));
+                } catch (IllegalAccessException e) {
+                    throw new EntityException("entity.error.metadata", e);
+                }
+            }
+            
+            // 旧アノテーションにフォールバック
+            jp.vemi.seasarbatis.core.meta.SBColumnMeta columnMeta = 
+                field.getAnnotation(jp.vemi.seasarbatis.core.meta.SBColumnMeta.class);
             if (columnMeta != null && columnMeta.lastModifiedColumn()) {
                 try {
                     field.setAccessible(true);
                     Object value = field.get(entity);
                     return Optional.of(new LastModifiedColumnInfo(field, columnMeta.name(), value));
                 } catch (IllegalAccessException e) {
-                    throw new SBEntityException("最終更新日時カラムの値取得に失敗しました: " + field.getName(), e);
+                    throw new EntityException("entity.error.metadata", e);
                 }
             }
         }
@@ -91,7 +118,7 @@ public class SBOptimisticLockSupport {
      * @param config 楽観的排他制御設定
      * @return 楽観的排他制御情報
      */
-    public static OptimisticLockInfo getOptimisticLockInfo(Object entity, SBOptimisticLockConfig config) {
+    public static OptimisticLockInfo getOptimisticLockInfo(Object entity, OptimisticLockConfig config) {
         if (!config.isEnabled()) {
             return new OptimisticLockInfo(LockType.NONE, null, null, null);
         }
@@ -155,7 +182,7 @@ public class SBOptimisticLockSupport {
                 } else if (currentValue instanceof Number) {
                     newValue = ((Number) currentValue).longValue() + 1;
                 } else {
-                    throw new SBIllegalStateException("バージョンカラムの型が数値型ではありません: " + field.getType());
+                    throw new FluidIllegalStateException("バージョンカラムの型が数値型ではありません: " + field.getType());
                 }
             } else if (lockInfo.getLockType() == LockType.LAST_MODIFIED) {
                 Class<?> fieldType = field.getType();
@@ -166,7 +193,7 @@ public class SBOptimisticLockSupport {
                 } else if (Temporal.class.isAssignableFrom(fieldType)) {
                     newValue = LocalDateTime.now();
                 } else {
-                    throw new SBIllegalStateException("最終更新日時カラムの型が日時型ではありません: " + fieldType);
+                    throw new FluidIllegalStateException("最終更新日時カラムの型が日時型ではありません: " + fieldType);
                 }
             } else {
                 return null;
@@ -176,7 +203,7 @@ public class SBOptimisticLockSupport {
             return newValue;
             
         } catch (IllegalAccessException e) {
-            throw new SBEntityException("楽観的排他制御用カラムの値更新に失敗しました: " + field.getName(), e);
+            throw new EntityException("entity.error.value.setting", e);
         }
     }
     
@@ -206,15 +233,45 @@ public class SBOptimisticLockSupport {
         private final String columnName;
         private final Object value;
         
+        /**
+         * バージョンカラム情報を構築します。
+         *
+         * @param field フィールド
+         * @param columnName カラム名
+         * @param value 値
+         */
         public VersionColumnInfo(Field field, String columnName, Object value) {
             this.field = field;
             this.columnName = columnName;
             this.value = value;
         }
         
-        public Field getField() { return field; }
-        public String getColumnName() { return columnName; }
-        public Object getValue() { return value; }
+        /**
+         * フィールドを取得します。
+         *
+         * @return フィールド
+         */
+        public Field getField() { 
+            return field; 
+        }
+        
+        /**
+         * カラム名を取得します。
+         *
+         * @return カラム名
+         */
+        public String getColumnName() { 
+            return columnName; 
+        }
+        
+        /**
+         * 値を取得します。
+         *
+         * @return 値
+         */
+        public Object getValue() { 
+            return value; 
+        }
     }
     
     /**
@@ -225,15 +282,45 @@ public class SBOptimisticLockSupport {
         private final String columnName;
         private final Object value;
         
+        /**
+         * 最終更新日時カラム情報を構築します。
+         *
+         * @param field フィールド
+         * @param columnName カラム名
+         * @param value 値
+         */
         public LastModifiedColumnInfo(Field field, String columnName, Object value) {
             this.field = field;
             this.columnName = columnName;
             this.value = value;
         }
         
-        public Field getField() { return field; }
-        public String getColumnName() { return columnName; }
-        public Object getValue() { return value; }
+        /**
+         * フィールドを取得します。
+         *
+         * @return フィールド
+         */
+        public Field getField() { 
+            return field; 
+        }
+        
+        /**
+         * カラム名を取得します。
+         *
+         * @return カラム名
+         */
+        public String getColumnName() { 
+            return columnName; 
+        }
+        
+        /**
+         * 値を取得します。
+         *
+         * @return 値
+         */
+        public Object getValue() { 
+            return value; 
+        }
     }
     
     /**
@@ -245,6 +332,14 @@ public class SBOptimisticLockSupport {
         private final Object currentValue;
         private final Field field;
         
+        /**
+         * 楽観的排他制御情報を構築します。
+         *
+         * @param lockType ロックタイプ
+         * @param columnName カラム名
+         * @param currentValue 現在の値
+         * @param field フィールド
+         */
         public OptimisticLockInfo(LockType lockType, String columnName, Object currentValue, Field field) {
             this.lockType = lockType;
             this.columnName = columnName;
@@ -252,11 +347,47 @@ public class SBOptimisticLockSupport {
             this.field = field;
         }
         
-        public LockType getLockType() { return lockType; }
-        public String getColumnName() { return columnName; }
-        public Object getCurrentValue() { return currentValue; }
-        public Field getField() { return field; }
+        /**
+         * ロックタイプを取得します。
+         *
+         * @return ロックタイプ
+         */
+        public LockType getLockType() { 
+            return lockType; 
+        }
         
+        /**
+         * カラム名を取得します。
+         *
+         * @return カラム名
+         */
+        public String getColumnName() { 
+            return columnName; 
+        }
+        
+        /**
+         * 現在の値を取得します。
+         *
+         * @return 現在の値
+         */
+        public Object getCurrentValue() { 
+            return currentValue; 
+        }
+        
+        /**
+         * フィールドを取得します。
+         *
+         * @return フィールド
+         */
+        public Field getField() { 
+            return field; 
+        }
+        
+        /**
+         * 楽観的排他制御が有効かどうかを取得します。
+         *
+         * @return 有効な場合true
+         */
         public boolean isEnabled() {
             return lockType != LockType.NONE;
         }

@@ -1,16 +1,15 @@
 /*
  * Copyright (C) 2025 VEMI, All Rights Reserved.
  */
-package jp.vemi.seasarbatis.core.entity;
+package jp.vemi.batisfluid.entity;
 
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
-import jp.vemi.batisfluid.entity.PrimaryKeyInfo;
-import jp.vemi.seasarbatis.core.meta.SBColumnMeta;
-import jp.vemi.seasarbatis.exception.SBEntityException;
+import jp.vemi.batisfluid.meta.FluidColumn;
+import jp.vemi.batisfluid.exception.EntityException;
 
 /**
  * エンティティの主キー情報を保持するクラスです。
@@ -20,12 +19,9 @@ import jp.vemi.seasarbatis.exception.SBEntityException;
  * </p>
  * 
  * @author H.Kurosawa
- * @version 1.0.0
- * @since 2025/01/01
- * @deprecated v0.0.2以降は {@link PrimaryKeyInfo} を使用してください。
+ * @version 0.0.2
  */
-@Deprecated(since = "0.0.2", forRemoval = true)
-public class SBPrimaryKeyInfo {
+public class PrimaryKeyInfo {
     
     private final List<Field> fields;
     private final List<String> columnNames;
@@ -36,7 +32,7 @@ public class SBPrimaryKeyInfo {
      * @param fields 主キーフィールドのリスト
      * @param columnNames 主キーカラム名のリスト
      */
-    public SBPrimaryKeyInfo(List<Field> fields, List<String> columnNames) {
+    public PrimaryKeyInfo(List<Field> fields, List<String> columnNames) {
         this.fields = fields;
         this.columnNames = columnNames;
     }
@@ -47,17 +43,26 @@ public class SBPrimaryKeyInfo {
      * @param <T> エンティティの型
      * @param entity エンティティ
      * @return 主キーの値のマップ（カラム名, 値）
-     * @throws SBEntityException 主キー値の取得に失敗した場合
+     * @throws EntityException 主キー値の取得に失敗した場合
      */
     public <T> Map<String, Object> getPrimaryKeyValues(T entity) {
         Map<String, Object> pkValues = new HashMap<>();
         fields.forEach(field -> {
             try {
                 field.setAccessible(true);
-                SBColumnMeta columnMeta = field.getAnnotation(SBColumnMeta.class);
-                pkValues.put(columnMeta.name(), field.get(entity));
+                FluidColumn columnMeta = field.getAnnotation(FluidColumn.class);
+                if (columnMeta != null) {
+                    pkValues.put(columnMeta.name(), field.get(entity));
+                } else {
+                    // フォールバック：旧アノテーションをチェック
+                    jp.vemi.seasarbatis.core.meta.SBColumnMeta sbColumnMeta = 
+                        field.getAnnotation(jp.vemi.seasarbatis.core.meta.SBColumnMeta.class);
+                    if (sbColumnMeta != null) {
+                        pkValues.put(sbColumnMeta.name(), field.get(entity));
+                    }
+                }
             } catch (Exception e) {
-                throw new SBEntityException("主キーの値の取得に失敗しました", e);
+                throw new EntityException("entity.error.metadata", e);
             }
         });
         return pkValues;
