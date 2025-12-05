@@ -9,6 +9,8 @@ import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import jp.vemi.batisfluid.config.OptimisticLockConfig;
@@ -77,5 +79,42 @@ class BatisFluidTest {
         assertNotNull(flow1, "1つ目のJdbcFlowがnullであってはならない");
         assertNotNull(flow2, "2つ目のJdbcFlowがnullであってはならない");
         assertNotSame(flow1, flow2, "複数呼び出しで異なるインスタンスが生成されるべき");
+    }
+    
+    @Nested
+    @DisplayName("JdbcFlowトランザクション統合テスト")
+    class JdbcFlowTransactionTests {
+        
+        @Test
+        @DisplayName("JdbcFlowからTransactionManagerを取得できる")
+        void testJdbcFlowHasTransactionManager() {
+            BatisFluid fluid = BatisFluid.of(sqlSessionFactory);
+            JdbcFlow flow = fluid.jdbcFlow();
+            
+            assertNotNull(flow.getTransactionManager(), "TransactionManagerがnullであってはならない");
+        }
+        
+        @Test
+        @DisplayName("JdbcFlowからSimpleWhereを取得できる")
+        void testJdbcFlowHasWhere() {
+            BatisFluid fluid = BatisFluid.of(sqlSessionFactory);
+            JdbcFlow flow = fluid.jdbcFlow();
+            
+            assertNotNull(flow.where(), "whereメソッドの戻り値がnullであってはならない");
+        }
+    }
+    
+    @Nested
+    @DisplayName("SqlRunnerトランザクション統合テスト")
+    class SqlRunnerTransactionTests {
+        
+        @Test
+        @DisplayName("SqlRunnerからTransactionManagerを取得できる")
+        void testSqlRunnerHasTransactionManager() {
+            BatisFluid fluid = BatisFluid.of(sqlSessionFactory);
+            SqlRunner runner = fluid.sqlRunner();
+            
+            assertNotNull(runner.getTransactionManager(), "TransactionManagerがnullであってはならない");
+        }
     }
 }

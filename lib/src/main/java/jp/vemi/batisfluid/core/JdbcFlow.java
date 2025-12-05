@@ -3,9 +3,14 @@
  */
 package jp.vemi.batisfluid.core;
 
+import java.util.concurrent.Callable;
+
 import org.apache.ibatis.session.SqlSessionFactory;
 
 import jp.vemi.batisfluid.config.OptimisticLockConfig;
+import jp.vemi.batisfluid.query.SimpleWhere;
+import jp.vemi.batisfluid.transaction.PropagationType;
+import jp.vemi.batisfluid.transaction.TransactionManager;
 import jp.vemi.seasarbatis.core.builder.SBSelectBuilder;
 import jp.vemi.seasarbatis.core.query.SBSelect;
 import jp.vemi.seasarbatis.jdbc.SBJdbcManager;
@@ -24,6 +29,7 @@ import jp.vemi.seasarbatis.jdbc.SBJdbcManager;
 public class JdbcFlow {
     
     private final SBJdbcManager delegate;
+    private final TransactionManager transactionManager;
     
     /**
      * JdbcFlowを構築します。
@@ -32,6 +38,7 @@ public class JdbcFlow {
      */
     public JdbcFlow(SqlSessionFactory sqlSessionFactory) {
         this.delegate = new SBJdbcManager(sqlSessionFactory);
+        this.transactionManager = new TransactionManager(sqlSessionFactory);
     }
     
     /**
@@ -53,6 +60,7 @@ public class JdbcFlow {
         // TODO: エンティティごとの設定を取得できるAPIが必要
         
         this.delegate = new SBJdbcManager(sqlSessionFactory, oldConfig);
+        this.transactionManager = new TransactionManager(sqlSessionFactory);
     }
     
     /**
@@ -210,5 +218,61 @@ public class JdbcFlow {
      */
     public <T> T insertOrUpdate(T entity, boolean isIndependentTransaction) {
         return delegate.insertOrUpdate(entity, isIndependentTransaction);
+    }
+    
+    // ========================================
+    // トランザクション制御メソッド
+    // ========================================
+    
+    /**
+     * トランザクション内で処理を実行します。
+     * <p>
+     * 既存のトランザクションがある場合はそれを使用し、
+     * ない場合は新規トランザクションを作成します。
+     * </p>
+     *
+     * @param <T> 戻り値の型
+     * @param action 実行する処理
+     * @return 処理の結果
+     */
+    public <T> T transaction(Callable<T> action) {
+        return transactionManager.execute(PropagationType.REQUIRED, action);
+    }
+    
+    /**
+     * 指定された伝播タイプでトランザクションを実行します。
+     *
+     * @param <T> 戻り値の型
+     * @param propagationType トランザクション伝播タイプ
+     * @param action 実行する処理
+     * @return 処理の結果
+     */
+    public <T> T transaction(PropagationType propagationType, Callable<T> action) {
+        return transactionManager.execute(propagationType, action);
+    }
+    
+    /**
+     * トランザクションマネージャを取得します。
+     *
+     * @return TransactionManager
+     */
+    public TransactionManager getTransactionManager() {
+        return transactionManager;
+    }
+    
+    // ========================================
+    // Criteria API メソッド
+    // ========================================
+    
+    /**
+     * WHERE句を構築するためのSimpleWhereインスタンスを作成します。
+     * <p>
+     * 新しいBatisFluid APIを使用したWHERE句の構築に使用します。
+     * </p>
+     *
+     * @return 新しいSimpleWhereインスタンス
+     */
+    public SimpleWhere where() {
+        return new SimpleWhere();
     }
 }
