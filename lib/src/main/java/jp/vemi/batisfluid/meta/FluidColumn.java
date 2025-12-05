@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2025 VEMI, All Rights Reserved.
  */
-package jp.vemi.seasarbatis.core.meta;
+package jp.vemi.batisfluid.meta;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -14,21 +14,14 @@ import java.lang.annotation.Target;
  * このアノテーションを使用して、エンティティのフィールドと
  * データベースのカラムとのマッピング情報を定義します。
  * </p>
- * <p>
- * <strong>非推奨：</strong> このアノテーションはv0.0.2で非推奨となりました。
- * 代わりに{@link jp.vemi.batisfluid.meta.FluidColumn}を使用してください。
- * </p>
  * 
  * @author H.Kurosawa
  * @version 0.0.2
- * @since 2025/01/01
- * @deprecated v0.0.2以降は{@link jp.vemi.batisfluid.meta.FluidColumn}を使用してください。
- *             このアノテーションはv0.0.3以降で削除される予定です。
+ * @since 0.0.2
  */
-@Deprecated(since = "0.0.2")
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface SBColumnMeta {
+public @interface FluidColumn {
     /**
      * データベースのカラム名を指定します。
      * 
