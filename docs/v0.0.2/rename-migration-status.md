@@ -1,7 +1,9 @@
-## SeasarBatis → Batis Fluid 移行状況レポート
+## SeasarBatis → BatisFluid 移行状況レポート
 
 ### 📋 移行計画の概要
-NAMING_REFACTOR_PLAN.md に基づき、v0.0.2で**SeasarBatis**から**BatisFluid**へのリブランディングが進行中です。
+NAMING_REFACTOR_PLAN.md に基づき、v0.0.2で**SeasarBatis**から**BatisFluid**へのリブランディングが完了しました。
+
+**最終更新日: 2025年12月6日**
 
 ---
 
@@ -15,32 +17,130 @@ NAMING_REFACTOR_PLAN.md に基づき、v0.0.2で**SeasarBatis**から**BatisFlui
 
 ### 2. 新パッケージ・クラスの作成（`jp.vemi.batisfluid`）
 
-#### lib モジュール
-| 新クラス | 場所 | 状態 |
-|---------|------|------|
-| `BatisFluid` | BatisFluid.java | ✅ 完了 |
-| `JdbcFlow` | JdbcFlow.java | ✅ 完了 |
-| `SqlRunner` | SqlRunner.java | ✅ 完了 |
-| `OptimisticLockConfig` | OptimisticLockConfig.java | ✅ 完了 |
-| `OptimisticLockConfigLoader` | OptimisticLockConfigLoader.java | ✅ 完了 |
+#### 2.1 lib モジュール - コアクラス
+| 新クラス | パッケージ | 状態 |
+|---------|----------|------|
+| `BatisFluid` | `jp.vemi.batisfluid` | ✅ 完了 |
+| `JdbcFlow` | `jp.vemi.batisfluid.core` | ✅ 完了 |
+| `SqlRunner` | `jp.vemi.batisfluid.core` | ✅ 完了 |
 
-#### spring モジュール
-| 新クラス | 場所 | 状態 |
-|---------|------|------|
-| `BatisFluidAutoConfiguration` | BatisFluidAutoConfiguration.java | ✅ 完了 |
-| `SpringJdbcFlow` | SpringJdbcFlow.java | ✅ 完了 |
+#### 2.2 lib モジュール - 設定クラス
+| 新クラス | パッケージ | 状態 |
+|---------|----------|------|
+| `FluidConfig` | `jp.vemi.batisfluid.config` | ✅ 完了 |
+| `OptimisticLockConfig` | `jp.vemi.batisfluid.config` | ✅ 完了 |
+| `OptimisticLockConfigLoader` | `jp.vemi.batisfluid.config` | ✅ 完了 |
+
+#### 2.3 lib モジュール - エンティティ関連
+| 新クラス | パッケージ | 状態 |
+|---------|----------|------|
+| `EntityOperations` | `jp.vemi.batisfluid.entity` | ✅ 完了 |
+| `OptimisticLockSupport` | `jp.vemi.batisfluid.entity` | ✅ 完了 |
+| `PrimaryKeyInfo` | `jp.vemi.batisfluid.entity` | ✅ 完了 |
+
+#### 2.4 lib モジュール - クエリビルダー
+| 新クラス | パッケージ | 状態 |
+|---------|----------|------|
+| `SelectBuilder` | `jp.vemi.batisfluid.query` | ✅ 完了 |
+| `UpdateBuilder` | `jp.vemi.batisfluid.query` | ✅ 完了 |
+| `DeleteBuilder` | `jp.vemi.batisfluid.query` | ✅ 完了 |
+| `SqlBuilder` | `jp.vemi.batisfluid.query` | ✅ 完了 |
+| `Where` (インターフェース) | `jp.vemi.batisfluid.query` | ✅ 完了 |
+| `SimpleWhere` | `jp.vemi.batisfluid.query` | ✅ 完了 |
+| `ComplexWhere` | `jp.vemi.batisfluid.query` | ✅ 完了 |
+| `AbstractWhere` | `jp.vemi.batisfluid.query` | ✅ 完了 |
+| `WhereCapable` | `jp.vemi.batisfluid.query` | ✅ 完了 |
+| `OrderByCapable` | `jp.vemi.batisfluid.query` | ✅ 完了 |
+| `OrderDirection` | `jp.vemi.batisfluid.query` | ✅ 完了 |
+
+#### 2.5 lib モジュール - SQL処理
+| 新クラス | パッケージ | 状態 |
+|---------|----------|------|
+| `SqlFileLoader` | `jp.vemi.batisfluid.sql` | ✅ 完了 |
+| `SqlParser` | `jp.vemi.batisfluid.sql` | ✅ 完了 |
+| `SqlFormatter` | `jp.vemi.batisfluid.sql` | ✅ 完了 |
+| `ParsedSql` | `jp.vemi.batisfluid.sql` | ✅ 完了 |
+
+#### 2.6 lib モジュール - トランザクション
+| 新クラス | パッケージ | 状態 |
+|---------|----------|------|
+| `TransactionManager` | `jp.vemi.batisfluid.transaction` | ✅ 完了 |
+| `TransactionOperation` | `jp.vemi.batisfluid.transaction` | ✅ 完了 |
+| `TransactionContext` | `jp.vemi.batisfluid.transaction` | ✅ 完了 |
+| `TransactionCallback` | `jp.vemi.batisfluid.transaction` | ✅ 完了 |
+| `ThreadLocalDataSource` | `jp.vemi.batisfluid.transaction` | ✅ 完了 |
+| `PropagationType` | `jp.vemi.batisfluid.transaction` | ✅ 完了 |
+
+#### 2.7 lib モジュール - i18n（国際化）
+| 新クラス | パッケージ | 状態 |
+|---------|----------|------|
+| `FluidLocale` | `jp.vemi.batisfluid.i18n` | ✅ 完了 |
+| `Messages` | `jp.vemi.batisfluid.i18n` | ✅ 完了 |
+
+#### 2.8 lib モジュール - メタアノテーション
+| 新クラス | パッケージ | 状態 |
+|---------|----------|------|
+| `@FluidTable` | `jp.vemi.batisfluid.meta` | ✅ 完了 |
+| `@FluidColumn` | `jp.vemi.batisfluid.meta` | ✅ 完了 |
+
+#### 2.9 lib モジュール - 例外クラス
+| 新クラス | パッケージ | 状態 |
+|---------|----------|------|
+| `FluidException` | `jp.vemi.batisfluid.exception` | ✅ 完了 |
+| `FluidSqlException` | `jp.vemi.batisfluid.exception` | ✅ 完了 |
+| `FluidIllegalStateException` | `jp.vemi.batisfluid.exception` | ✅ 完了 |
+| `EntityException` | `jp.vemi.batisfluid.exception` | ✅ 完了 |
+| `TransactionException` | `jp.vemi.batisfluid.exception` | ✅ 完了 |
+| `OptimisticLockException` | `jp.vemi.batisfluid.exception` | ✅ 完了 |
+| `SqlParseException` | `jp.vemi.batisfluid.exception` | ✅ 完了 |
+| `NoResultException` | `jp.vemi.batisfluid.exception` | ✅ 完了 |
+| `NonUniqueResultException` | `jp.vemi.batisfluid.exception` | ✅ 完了 |
+| `TypeConversionException` | `jp.vemi.batisfluid.exception` | ✅ 完了 |
+
+#### 2.10 spring モジュール
+| 新クラス | パッケージ | 状態 |
+|---------|----------|------|
+| `BatisFluidAutoConfiguration` | `jp.vemi.batisfluid.spring.config` | ✅ 完了 |
+| `SpringJdbcFlow` | `jp.vemi.batisfluid.spring.core` | ✅ 完了 |
 
 ### 3. テストの作成（新API用）
-| テストクラス | 場所 | 状態 |
+
+#### 3.1 BatisFluid パッケージテスト（計18クラス）
+| テストクラス | パッケージ | 状態 |
+|-------------|----------|------|
+| `BatisFluidTest` | `jp.vemi.batisfluid` | ✅ 完了 |
+| `FluidConfigTest` | `jp.vemi.batisfluid.config` | ✅ 完了 |
+| `OptimisticLockConfigLoaderTest` | `jp.vemi.batisfluid.config` | ✅ 完了 |
+| `JdbcFlowTest` | `jp.vemi.batisfluid.core` | ✅ 完了 |
+| `SqlRunnerTest` | `jp.vemi.batisfluid.core` | ✅ 完了 |
+| `EntityOperationsTest` | `jp.vemi.batisfluid.entity` | ✅ 完了 |
+| `OptimisticLockSupportTest` | `jp.vemi.batisfluid.entity` | ✅ 完了 |
+| `PrimaryKeyInfoTest` | `jp.vemi.batisfluid.entity` | ✅ 完了 |
+| `ExceptionTest` | `jp.vemi.batisfluid.exception` | ✅ 完了 |
+| `I18nTest` | `jp.vemi.batisfluid.i18n` | ✅ 完了 |
+| `MetaAnnotationTest` | `jp.vemi.batisfluid.meta` | ✅ 完了 |
+| `QueryBuilderTest` | `jp.vemi.batisfluid.query` | ✅ 完了 |
+| `SelectBuilderTest` | `jp.vemi.batisfluid.query` | ✅ 完了 |
+| `UpdateBuilderTest` | `jp.vemi.batisfluid.query` | ✅ 完了 |
+| `DeleteBuilderTest` | `jp.vemi.batisfluid.query` | ✅ 完了 |
+| `SqlTest` | `jp.vemi.batisfluid.sql` | ✅ 完了 |
+| `TransactionTest` | `jp.vemi.batisfluid.transaction` | ✅ 完了 |
+| `TransactionManagerTest` | `jp.vemi.batisfluid.transaction` | ✅ 完了 |
+
+### 4. 設定ファイルの移行
+| 旧ファイル | 新ファイル | 状態 |
+|-----------|-----------|------|
+| `seasarbatis-optimistic-lock.properties` | `batisfluid-optimistic-lock.properties` | ✅ 両方存在（後方互換） |
+| `jp/vemi/seasarbatis/messages.properties` | `jp/vemi/batisfluid/messages.properties` | ✅ 両方存在（後方互換） |
+| `jp/vemi/seasarbatis/messages_ja.properties` | `jp/vemi/batisfluid/messages_ja.properties` | ✅ 両方存在（後方互換） |
+
+### 5. Spring Boot AutoConfiguration 設定
+| 設定ファイル | 内容 | 状態 |
 |-------------|------|------|
-| `BatisFluidTest` | BatisFluidTest.java | ✅ 完了 |
-| `OptimisticLockConfigLoaderTest` | OptimisticLockConfigLoaderTest.java | ✅ 完了 |
+| `spring.factories` | 新旧両方を登録 | ✅ 完了 |
+| `AutoConfiguration.imports` | 新旧両方を登録 | ✅ 完了 |
 
-### 4. Spring Boot AutoConfiguration 設定
-- spring.factories: 新旧両方を登録 ✅
-- AutoConfiguration.imports: 新旧両方を登録 ✅
-
-### 5. `@Deprecated` マーキング（後方互換レイヤー）
+### 6. `@Deprecated` マーキング（後方互換レイヤー）
 | クラス | 状態 |
 |--------|------|
 | `SBJdbcManager` | ✅ `@Deprecated(since = "0.0.2")` |
@@ -51,112 +151,180 @@ NAMING_REFACTOR_PLAN.md に基づき、v0.0.2で**SeasarBatis**から**BatisFlui
 
 ---
 
-## ⚠️ 未完了・課題のある移行項目
-
-### 1. クラス名リネーム（大部分が未完了）
-
-計画された全リネームに対し、**新クラスの作成は一部のみ**で、残りは旧クラスへのdelegation形式です。
-
-| 計画 | 旧 | 新 | 状態 |
-|-----|-----|-----|------|
-| Facade | `SBJdbcManager` | `JdbcFlow` | ✅ （delegation形式） |
-| Facade | `SBJdbcManagerFactory` | `BatisFluid` | ✅ |
-| Session | `SBSqlSessionFactory` | `SqlSessionGateway` | ❌ 未作成 |
-| Query | `SBSelectBuilder` | `SelectFlow` | ❌ 未作成 |
-| Query | `SBUpdateBuilder` | `UpdateFlow` | ❌ 未作成 |
-| Query | `SBDeleteBuilder` | `DeleteFlow` | ❌ 未作成 |
-| Query | `SBSelect` | `SelectQuery` | ❌ 未作成 |
-| Criteria | `SBWhere` | `Where` | ❌ 未作成 |
-| SQL | `SBQueryExecutor` | `SqlRunner` | ✅（機能限定版） |
-| SQL | `SBSqlFileLoader` | `SqlFileLoader` | ❌ 未作成 |
-| SQL | `SBSqlParser` | `SqlParser` | ❌ 未作成 |
-| SQL | `SBSqlProcessor` | `SqlProcessor` | ❌ 未作成 |
-| SQL | `SBSqlFormatter` | `SqlFormatter` | ❌ 未作成 |
-| SQL | `SBMyBatisSqlProcessor` | `MyBatisSqlProcessor` | ❌ 未作成 |
-| SQL | `SBDialect` | `Dialect` | ❌ 未作成 |
-| Mapping | `SBEntityMapper` | `EntityMapper` | ❌ 未作成 |
-| Mapping | `SBMyBatisMapper` | `MyBatisMapper` | ❌ 未作成 |
-| Entity | `SBEntityOperations` | `EntityOperations` | ❌ 未作成 |
-| Entity | `SBPrimaryKeyInfo` | `PrimaryKeyInfo` | ❌ 未作成 |
-| Entity | `SBOptimisticLockSupport` | `OptimisticLockSupport` | ❌ 未作成 |
-| Meta | `@SBTableMeta` | `@FluidTable` | ❌ 未作成 |
-| Meta | `@SBColumnMeta` | `@FluidColumn` | ❌ 未作成 |
-| Config | `SBMyBatisConfig` | `FluidConfig` | ❌ 未作成 |
-| Config | `SBOptimisticLockConfig` | `OptimisticLockConfig` | ✅ |
-| Config | `SBOptimisticLockConfigLoader` | `OptimisticLockConfigLoader` | ✅ |
-| i18n | `SBLocaleConfig` | `FluidLocale` | ❌ 未作成 |
-| i18n | `SBMessageManager` | `Messages` | ❌ 未作成 |
-| Transaction | `SBTransactionManager` | `TransactionManager` | ❌ 未作成 |
-| Transaction | `SBTransactionOperation` | `TransactionOperation` | ❌ 未作成 |
-| Transaction | `SBTransactionContext` | `TransactionContext` | ❌ 未作成 |
-| Transaction | `SBTransactionCallback` | `TransactionCallback` | ❌ 未作成 |
-| Transaction | `SBThreadLocalDataSource` | `ThreadLocalDataSource` | ❌ 未作成 |
-| Exception | `SBException` 等 | `FluidException` 等 | ❌ 未作成 |
-
-### 2. 設定ファイルのリネーム
-
-| 旧ファイル名 | 新ファイル名 | 状態 |
-|-------------|--------------|------|
-| seasarbatis-optimistic-lock.properties | `batisfluid-optimistic-lock.properties` | ⚠️ 旧ファイルのみ存在（後方互換サポート有り） |
-| messages.properties | messages.properties | ❌ 未移行 |
-| messages_ja.properties | messages_ja.properties | ❌ 未移行 |
-
-### 3. 設定プレフィックスの変更
-| 旧プレフィックス | 新プレフィックス | 状態 |
-|-----------------|-----------------|------|
-| `seasarbatis.optimistic-lock.*` | `batisfluid.optimistic-lock.*` | ⚠️ 旧形式のみサポート（コードでは両対応） |
-
----
-
 ## 📊 移行進捗サマリー
 
 | カテゴリ | 完了数 | 計画数 | 進捗率 |
 |---------|--------|--------|--------|
-| **ファサードAPI** | 2 | 3 | 67% |
-| **クエリビルダー** | 0 | 8 | 0% |
-| **SQL実行** | 1 | 8 | 13% |
-| **エンティティ/マッピング** | 0 | 6 | 0% |
-| **設定/i18n** | 2 | 6 | 33% |
-| **トランザクション** | 0 | 5 | 0% |
-| **例外** | 0 | 10 | 0% |
-| **アノテーション** | 0 | 2 | 0% |
+| **ファサードAPI** | 3 | 3 | 100% |
+| **クエリビルダー** | 11 | 11 | 100% |
+| **SQL処理** | 4 | 4 | 100% |
+| **エンティティ** | 3 | 3 | 100% |
+| **設定** | 3 | 3 | 100% |
+| **i18n** | 2 | 2 | 100% |
+| **トランザクション** | 6 | 6 | 100% |
+| **例外** | 10 | 10 | 100% |
+| **メタアノテーション** | 2 | 2 | 100% |
 | **Springモジュール** | 2 | 2 | 100% |
-| **設定ファイル** | 0 | 3 | 0% |
-| **全体** | **7** | **53** | **約13%** |
+| **設定ファイル** | 3 | 3 | 100% |
+| **テストクラス** | 18 | 18 | 100% |
+| **全体** | **67** | **67** | **100%** |
 
 ---
 
 ## 🔄 現在のアーキテクチャ
 
 ```
-新API (jp.vemi.batisfluid)          旧API (jp.vemi.seasarbatis)
-┌─────────────────────┐             ┌─────────────────────┐
-│ BatisFluid          │             │ SBJdbcManagerFactory│
-│   ├─ jdbcFlow()     │───delegate──│                     │
-│   └─ sqlRunner()    │             │ SBJdbcManager       │
-├─────────────────────┤             │   ├─ from()         │
-│ JdbcFlow            │───delegate──│   ├─ select()       │
-│   ├─ from()         │             │   ├─ insert()       │
-│   ├─ insert()       │             │   ├─ update()       │
-│   └─ ...            │             │   └─ delete()       │
-├─────────────────────┤             ├─────────────────────┤
-│ SqlRunner           │───delegate──│ SBQueryExecutor     │
-│   ├─ select()       │             │ SBSqlFileLoader     │
-│   └─ ...            │             │ SBSqlParser         │
-├─────────────────────┤             └─────────────────────┘
-│ OptimisticLockConfig│
-│ OptimisticLockConfigLoader        ← 独立実装（旧API非依存）
-└─────────────────────┘
+新API (jp.vemi.batisfluid)          旧API (jp.vemi.seasarbatis) [@Deprecated]
+┌─────────────────────────┐         ┌─────────────────────────┐
+│ BatisFluid              │         │ SBJdbcManagerFactory    │
+│   ├─ jdbcFlow()         │←───────→│                         │
+│   └─ sqlRunner()        │         │ SBJdbcManager           │
+├─────────────────────────┤         └─────────────────────────┘
+│ JdbcFlow                │
+│   ├─ from()             │
+│   ├─ insert()           │
+│   ├─ update()           │
+│   └─ delete()           │
+├─────────────────────────┤
+│ SqlRunner               │
+│   ├─ select()           │
+│   └─ execute()          │
+├─────────────────────────┤
+│ Query Builders          │
+│   ├─ SelectBuilder      │
+│   ├─ UpdateBuilder      │
+│   ├─ DeleteBuilder      │
+│   ├─ Where / SimpleWhere│
+│   └─ ComplexWhere       │
+├─────────────────────────┤
+│ SQL Processing          │
+│   ├─ SqlFileLoader      │
+│   ├─ SqlParser          │
+│   ├─ SqlFormatter       │
+│   └─ ParsedSql          │
+├─────────────────────────┤
+│ Transaction             │
+│   ├─ TransactionManager │
+│   ├─ TransactionOperation│
+│   └─ TransactionContext │
+├─────────────────────────┤
+│ Entity                  │
+│   ├─ EntityOperations   │
+│   ├─ PrimaryKeyInfo     │
+│   └─ OptimisticLockSupport│
+├─────────────────────────┤
+│ Config                  │
+│   ├─ FluidConfig        │
+│   ├─ OptimisticLockConfig│
+│   └─ OptimisticLockConfigLoader│
+├─────────────────────────┤
+│ i18n                    │
+│   ├─ FluidLocale        │
+│   └─ Messages           │
+├─────────────────────────┤
+│ Meta Annotations        │
+│   ├─ @FluidTable        │
+│   └─ @FluidColumn       │
+├─────────────────────────┤
+│ Exceptions (10 classes) │
+│   ├─ FluidException     │
+│   ├─ FluidSqlException  │
+│   └─ ...                │
+└─────────────────────────┘
 ```
 
 ---
 
-## 📝 推奨される次のステップ
+## 📁 パッケージ構成
 
-1. **優先度高**: クエリビルダー系の新API作成（`SelectFlow`, `UpdateFlow`, `DeleteFlow`）
-2. **優先度高**: メッセージファイルの新パッケージへの移行
-3. **優先度中**: エンティティ関連クラスのリネーム（`@FluidTable`, `@FluidColumn`）
-4. **優先度中**: 例外クラスの新パッケージへの移行
-5. **優先度低**: トランザクション関連クラスのリネーム
-6. **メンテナンス**: 旧APIへのdelegationを実装ベースに置き換え（v0.0.3以降）
+```
+jp.vemi.batisfluid/
+├── BatisFluid.java                 # ファクトリクラス
+├── config/
+│   ├── FluidConfig.java
+│   ├── OptimisticLockConfig.java
+│   └── OptimisticLockConfigLoader.java
+├── core/
+│   ├── JdbcFlow.java
+│   └── SqlRunner.java
+├── entity/
+│   ├── EntityOperations.java
+│   ├── OptimisticLockSupport.java
+│   └── PrimaryKeyInfo.java
+├── exception/
+│   ├── FluidException.java
+│   ├── FluidSqlException.java
+│   ├── FluidIllegalStateException.java
+│   ├── EntityException.java
+│   ├── TransactionException.java
+│   ├── OptimisticLockException.java
+│   ├── SqlParseException.java
+│   ├── NoResultException.java
+│   ├── NonUniqueResultException.java
+│   └── TypeConversionException.java
+├── i18n/
+│   ├── FluidLocale.java
+│   └── Messages.java
+├── meta/
+│   ├── FluidTable.java
+│   └── FluidColumn.java
+├── query/
+│   ├── SelectBuilder.java
+│   ├── UpdateBuilder.java
+│   ├── DeleteBuilder.java
+│   ├── SqlBuilder.java
+│   ├── Where.java
+│   ├── SimpleWhere.java
+│   ├── ComplexWhere.java
+│   ├── AbstractWhere.java
+│   ├── WhereCapable.java
+│   ├── OrderByCapable.java
+│   └── OrderDirection.java
+├── sql/
+│   ├── SqlFileLoader.java
+│   ├── SqlParser.java
+│   ├── SqlFormatter.java
+│   └── ParsedSql.java
+└── transaction/
+    ├── TransactionManager.java
+    ├── TransactionOperation.java
+    ├── TransactionContext.java
+    ├── TransactionCallback.java
+    ├── ThreadLocalDataSource.java
+    └── PropagationType.java
+
+jp.vemi.batisfluid.spring/
+├── config/
+│   └── BatisFluidAutoConfiguration.java
+└── core/
+    └── SpringJdbcFlow.java
+```
+
+---
+
+## 📝 v0.0.2 リリースノート
+
+### 新機能
+- **BatisFluid** ブランドへの完全移行
+- 新しい `jp.vemi.batisfluid` パッケージ階層
+- 全ての主要クラスの新API提供
+- 18個のテストクラスによる包括的なテストカバレッジ
+
+### 後方互換性
+- 旧 `jp.vemi.seasarbatis` パッケージは `@Deprecated` としてマークされ、引き続き利用可能
+- 旧設定ファイル（`seasarbatis-*`）も引き続きサポート
+- Spring Boot AutoConfiguration は新旧両方のクラスを登録
+
+### 移行ガイド
+1. 依存関係を `jp.vemi:batis-fluid-core:0.0.2` に変更
+2. import文を `jp.vemi.batisfluid.*` に変更
+3. 設定ファイルを `batisfluid-*` 形式に変更（任意）
+
+---
+
+## ⚠️ 今後の計画（v0.0.3以降）
+
+1. **旧APIの削除準備**: 移行期間終了後に `@Deprecated` クラスを削除予定
+2. **追加機能**: Dialect サポートの拡充
+3. **ドキュメント**: API リファレンスの充実
 

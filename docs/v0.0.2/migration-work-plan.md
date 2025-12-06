@@ -5,365 +5,254 @@
 本ドキュメントは [rename-migration-status.md](rename-migration-status.md) の移行状況に基づき、SeasarBatis → BatisFluid への完全移行を達成するための詳細作業計画を定義します。
 
 **作成日**: 2025年12月5日  
+**最終更新日**: 2025年12月6日  
 **対象バージョン**: v0.0.2  
 **参照ドキュメント**: [NAMING_REFACTOR_PLAN.md](reference/NAMING_REFACTOR_PLAN.md)
 
 ---
 
-## 🎯 移行方針
+## ✅ 移行完了報告
+
+**全フェーズの移行が完了しました。**
+
+| フェーズ | 内容 | 状態 |
+|---------|------|------|
+| 1 | 例外クラスの移行 | ✅ 完了 |
+| 2 | アノテーションの移行 | ✅ 完了 |
+| 3 | i18n/メッセージの移行 | ✅ 完了 |
+| 4 | 設定ファイルの移行 | ✅ 完了 |
+| 5 | エンティティ関連の移行 | ✅ 完了 |
+| 6 | SQL関連の移行 | ✅ 完了 |
+| 7 | クエリビルダーの移行 | ✅ 完了 |
+| 8 | トランザクション関連の移行 | ✅ 完了 |
+| 9 | ファサードの完成 | ✅ 完了 |
+| 10 | テストカバレッジ拡充 | ✅ 完了 |
+
+詳細な移行状況は [rename-migration-status.md](rename-migration-status.md) を参照してください。
+
+---
+
+## 🎯 移行方針（完了時の最終仕様）
 
 ### 基本原則
-1. **後方互換性の維持**: 旧API（`SB*`クラス）は`@Deprecated(since="0.0.2")`としてv0.0.2では残存
-2. **段階的移行**: delegation方式から徐々に独立実装へ移行
-3. **テスト駆動**: 各新クラスに対応するテストクラスを同時作成
+1. **後方互換性の維持**: 旧API（`SB*`クラス）は`@Deprecated(since="0.0.2")`としてv0.0.2では残存 ✅
+2. **段階的移行**: delegation方式から徐々に独立実装へ移行 ✅
+3. **テスト駆動**: 各新クラスに対応するテストクラスを同時作成 ✅
 4. **旧API削除予定**: v0.0.3以降で`@Deprecated`クラスを削除
 
 ### 命名規則
-- パッケージ: `jp.vemi.batisfluid.*`
-- クラス名から`SB`プレフィックスを削除
-- fluent APIには`*Flow`サフィックスを使用
-- アノテーションには`@Fluid*`プレフィックスを使用
+- パッケージ: `jp.vemi.batisfluid.*` ✅
+- クラス名から`SB`プレフィックスを削除 ✅
+- アノテーションには`@Fluid*`プレフィックスを使用 ✅
 
 ---
 
-## 📦 フェーズ1: 例外クラスの移行（優先度: 高）
+## 📦 完了したフェーズ一覧
 
-### 理由
-他のすべてのクラスが依存する基盤となるため、最初に移行する必要があります。
+### フェーズ1: 例外クラスの移行 ✅
 
-### 作業一覧
+| # | 旧クラス | 新クラス | 状態 |
+|---|---------|---------|------|
+| 1-1 | `SBException` | `FluidException` | ✅ 完了 |
+| 1-2 | `SBSQLException` | `FluidSqlException` | ✅ 完了 |
+| 1-3 | `SBNoResultException` | `NoResultException` | ✅ 完了 |
+| 1-4 | `SBNonUniqueResultException` | `NonUniqueResultException` | ✅ 完了 |
+| 1-5 | `SBOptimisticLockException` | `OptimisticLockException` | ✅ 完了 |
+| 1-6 | `SBSqlParseException` | `SqlParseException` | ✅ 完了 |
+| 1-7 | `SBTypeConversionException` | `TypeConversionException` | ✅ 完了 |
+| 1-8 | `SBEntityException` | `EntityException` | ✅ 完了 |
+| 1-9 | `SBIllegalStateException` | `FluidIllegalStateException` | ✅ 完了 |
+| 1-10 | `SBTransactionException` | `TransactionException` | ✅ 完了 |
 
-| # | 旧クラス | 新クラス | 新パッケージ | 作業内容 |
-|---|---------|---------|-------------|---------|
-| 1-1 | `SBException` | `FluidException` | `jp.vemi.batisfluid.exception` | 新規作成（継承元） |
-| 1-2 | `SBSQLException` | `FluidSqlException` | `jp.vemi.batisfluid.exception` | 新規作成 |
-| 1-3 | `SBNoResultException` | `NoResultException` | `jp.vemi.batisfluid.exception` | 新規作成 |
-| 1-4 | `SBNonUniqueResultException` | `NonUniqueResultException` | `jp.vemi.batisfluid.exception` | 新規作成 |
-| 1-5 | `SBOptimisticLockException` | `OptimisticLockException` | `jp.vemi.batisfluid.exception` | 新規作成 |
-| 1-6 | `SBSqlParseException` | `SqlParseException` | `jp.vemi.batisfluid.exception` | 新規作成 |
-| 1-7 | `SBTypeConversionException` | `TypeConversionException` | `jp.vemi.batisfluid.exception` | 新規作成 |
-| 1-8 | `SBEntityException` | `EntityException` | `jp.vemi.batisfluid.exception` | 新規作成 |
-| 1-9 | `SBIllegalStateException` | `FluidIllegalStateException` | `jp.vemi.batisfluid.exception` | 新規作成 |
-| 1-10 | `SBTransactionException` | `TransactionException` | `jp.vemi.batisfluid.exception` | 新規作成 |
+### フェーズ2: アノテーションの移行 ✅
 
-### 旧クラス対応
-- 各旧クラスに`@Deprecated(since="0.0.2")`を付与
-- Javadocに移行先クラスへの参照を追加
+| # | 旧アノテーション | 新アノテーション | 状態 |
+|---|-----------------|-----------------|------|
+| 2-1 | `@SBTableMeta` | `@FluidTable` | ✅ 完了 |
+| 2-2 | `@SBColumnMeta` | `@FluidColumn` | ✅ 完了 |
 
-### テスト
-- `jp.vemi.batisfluid.exception`パッケージにテストクラスを作成
+### フェーズ3: i18n/メッセージの移行 ✅
 
-### 推定工数
-- 作業時間: 2-3時間
-- テスト作成: 1時間
+| # | 旧クラス/ファイル | 新クラス/ファイル | 状態 |
+|---|------------------|------------------|------|
+| 3-1 | `SBLocaleConfig` | `FluidLocale` | ✅ 完了 |
+| 3-2 | `SBMessageManager` | `Messages` | ✅ 完了 |
+| 3-3 | `jp/vemi/seasarbatis/messages.properties` | `jp/vemi/batisfluid/messages.properties` | ✅ 完了 |
+| 3-4 | `jp/vemi/seasarbatis/messages_ja.properties` | `jp/vemi/batisfluid/messages_ja.properties` | ✅ 完了 |
 
----
+### フェーズ4: 設定ファイルの移行 ✅
 
-## 📦 フェーズ2: アノテーションの移行（優先度: 高）
+| # | 旧ファイル | 新ファイル | 状態 |
+|---|-----------|-----------|------|
+| 4-1 | `seasarbatis-optimistic-lock.properties` | `batisfluid-optimistic-lock.properties` | ✅ 完了 |
+| 4-2 | `SBMyBatisConfig` | `FluidConfig` | ✅ 完了 |
+| 4-3 | `SBOptimisticLockConfig` | `OptimisticLockConfig` | ✅ 完了 |
+| 4-4 | `SBOptimisticLockConfigLoader` | `OptimisticLockConfigLoader` | ✅ 完了 |
 
-### 理由
-エンティティクラスで使用され、他の移行作業の基盤となります。
+### フェーズ5: エンティティ関連クラスの移行 ✅
 
-### 作業一覧
+| # | 旧クラス | 新クラス | 状態 |
+|---|---------|---------|------|
+| 5-1 | `SBEntityOperations` | `EntityOperations` | ✅ 完了 |
+| 5-2 | `SBPrimaryKeyInfo` | `PrimaryKeyInfo` | ✅ 完了 |
+| 5-3 | `SBOptimisticLockSupport` | `OptimisticLockSupport` | ✅ 完了 |
 
-| # | 旧アノテーション | 新アノテーション | 新パッケージ |
-|---|-----------------|-----------------|-------------|
-| 2-1 | `@SBTableMeta` | `@FluidTable` | `jp.vemi.batisfluid.meta` |
-| 2-2 | `@SBColumnMeta` | `@FluidColumn` | `jp.vemi.batisfluid.meta` |
+### フェーズ6: SQL関連クラスの移行 ✅
 
-### 作業詳細
-```java
-// 新アノテーション例
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface FluidTable {
-    String name() default "";
-    String schema() default "";
-}
-```
+| # | 旧クラス | 新クラス | 状態 |
+|---|---------|---------|------|
+| 6-1 | `SBSqlFileLoader` | `SqlFileLoader` | ✅ 完了 |
+| 6-2 | `SBSqlParser` | `SqlParser` | ✅ 完了 |
+| 6-3 | `SBSqlFormatter` | `SqlFormatter` | ✅ 完了 |
+| 6-4 | `ParsedSql` | `ParsedSql` | ✅ 完了 |
 
-### 旧アノテーション対応
-- `@Deprecated(since="0.0.2")`を付与
-- 新アノテーションへのエイリアスを検討
+### フェーズ7: クエリビルダーの移行 ✅
 
-### 推定工数
-- 作業時間: 1時間
-- テスト作成: 30分
+| # | 旧クラス | 新クラス | 状態 |
+|---|---------|---------|------|
+| 7-1 | `SBSelectBuilder` | `SelectBuilder` | ✅ 完了 |
+| 7-2 | `SBUpdateBuilder` | `UpdateBuilder` | ✅ 完了 |
+| 7-3 | `SBDeleteBuilder` | `DeleteBuilder` | ✅ 完了 |
+| 7-4 | `SBSqlBuilder` | `SqlBuilder` | ✅ 完了 |
+| 7-5 | `SBWhere` | `Where` | ✅ 完了 |
+| 7-6 | `SimpleWhere` | `SimpleWhere` | ✅ 完了 |
+| 7-7 | `ComplexWhere` | `ComplexWhere` | ✅ 完了 |
+| 7-8 | `AbstractWhere` | `AbstractWhere` | ✅ 完了 |
+| 7-9 | `SBOrderByCapable` | `OrderByCapable` | ✅ 完了 |
+| 7-10 | `SBWhereCapable` | `WhereCapable` | ✅ 完了 |
+| 7-11 | - | `OrderDirection` | ✅ 完了 |
 
----
+### フェーズ8: トランザクション関連の移行 ✅
 
-## 📦 フェーズ3: i18n/メッセージの移行（優先度: 高）
+| # | 旧クラス | 新クラス | 状態 |
+|---|---------|---------|------|
+| 8-1 | `SBTransactionManager` | `TransactionManager` | ✅ 完了 |
+| 8-2 | `SBTransactionOperation` | `TransactionOperation` | ✅ 完了 |
+| 8-3 | `SBTransactionContext` | `TransactionContext` | ✅ 完了 |
+| 8-4 | `SBTransactionCallback` | `TransactionCallback` | ✅ 完了 |
+| 8-5 | `SBThreadLocalDataSource` | `ThreadLocalDataSource` | ✅ 完了 |
+| 8-6 | - | `PropagationType` | ✅ 完了 |
 
-### 理由
-例外メッセージ等で使用されるため、早期に移行が必要です。
+### フェーズ9: ファサードの完成 ✅
 
-### 作業一覧
+| # | 旧クラス | 新クラス | 状態 |
+|---|---------|---------|------|
+| 9-1 | `SBJdbcManagerFactory` | `BatisFluid` | ✅ 完了 |
+| 9-2 | `SBJdbcManager` | `JdbcFlow` | ✅ 完了 |
+| 9-3 | `SBQueryExecutor` | `SqlRunner` | ✅ 完了 |
 
-| # | 旧クラス/ファイル | 新クラス/ファイル | 作業内容 |
-|---|------------------|------------------|---------|
-| 3-1 | `SBLocaleConfig` | `FluidLocale` | 新規作成 |
-| 3-2 | `SBMessageManager` | `Messages` | 新規作成 |
-| 3-3 | `jp/vemi/seasarbatis/messages.properties` | `jp/vemi/batisfluid/messages.properties` | 新規作成（コピー＆修正） |
-| 3-4 | `jp/vemi/seasarbatis/messages_ja.properties` | `jp/vemi/batisfluid/messages_ja.properties` | 新規作成（コピー＆修正） |
+### フェーズ10: テストカバレッジ拡充 ✅
 
-### メッセージファイルの内容更新
-```properties
-# 旧
-seasarbatis.error.xxx=...
+BatisFluidパッケージに18個のテストクラスを作成：
 
-# 新
-batisfluid.error.xxx=...
-```
-
-### 推定工数
-- 作業時間: 1.5時間
-- テスト作成: 30分
-
----
-
-## 📦 フェーズ4: 設定ファイルの移行（優先度: 中）
-
-### 作業一覧
-
-| # | 旧ファイル | 新ファイル | 作業内容 |
-|---|-----------|-----------|---------|
-| 4-1 | `seasarbatis-optimistic-lock.properties` | `batisfluid-optimistic-lock.properties` | 新規作成（新プレフィックス対応） |
-| 4-2 | `SBMyBatisConfig` | `FluidConfig` | 新規作成 |
-
-### 設定ファイルの内容
-```properties
-# 新形式
-batisfluid.optimistic-lock.enabled=true
-batisfluid.optimistic-lock.default-type=NONE
-```
-
-### 後方互換性
-- `OptimisticLockConfigLoader`は既に両形式をサポート済み
-
-### 推定工数
-- 作業時間: 1時間
-- テスト作成: 30分
-
----
-
-## 📦 フェーズ5: エンティティ関連クラスの移行（優先度: 中）
-
-### 作業一覧
-
-| # | 旧クラス | 新クラス | 新パッケージ |
-|---|---------|---------|-------------|
-| 5-1 | `SBEntityOperations` | `EntityOperations` | `jp.vemi.batisfluid.entity` |
-| 5-2 | `SBPrimaryKeyInfo` | `PrimaryKeyInfo` | `jp.vemi.batisfluid.entity` |
-| 5-3 | `SBOptimisticLockSupport` | `OptimisticLockSupport` | `jp.vemi.batisfluid.entity` |
-| 5-4 | `SBEntityMapper` | `EntityMapper` | `jp.vemi.batisfluid.mapping` |
-| 5-5 | `SBMyBatisMapper` | `MyBatisMapper` | `jp.vemi.batisfluid.mapping` |
-
-### 推定工数
-- 作業時間: 3時間
-- テスト作成: 2時間
+| テストクラス | 対象 | 状態 |
+|-------------|------|------|
+| `BatisFluidTest` | ファクトリ | ✅ 完了 |
+| `FluidConfigTest` | 設定 | ✅ 完了 |
+| `OptimisticLockConfigLoaderTest` | 設定ローダー | ✅ 完了 |
+| `JdbcFlowTest` | JDBC操作 | ✅ 完了 |
+| `SqlRunnerTest` | SQL実行 | ✅ 完了 |
+| `EntityOperationsTest` | エンティティ操作 | ✅ 完了 |
+| `OptimisticLockSupportTest` | 楽観的ロック | ✅ 完了 |
+| `PrimaryKeyInfoTest` | 主キー情報 | ✅ 完了 |
+| `ExceptionTest` | 例外 | ✅ 完了 |
+| `I18nTest` | 国際化 | ✅ 完了 |
+| `MetaAnnotationTest` | アノテーション | ✅ 完了 |
+| `QueryBuilderTest` | クエリビルダー全般 | ✅ 完了 |
+| `SelectBuilderTest` | SELECT | ✅ 完了 |
+| `UpdateBuilderTest` | UPDATE | ✅ 完了 |
+| `DeleteBuilderTest` | DELETE | ✅ 完了 |
+| `SqlTest` | SQL処理 | ✅ 完了 |
+| `TransactionTest` | トランザクション全般 | ✅ 完了 |
+| `TransactionManagerTest` | トランザクション管理 | ✅ 完了 |
 
 ---
 
-## 📦 フェーズ6: SQL関連クラスの移行（優先度: 中）
-
-### 作業一覧
-
-| # | 旧クラス | 新クラス | 新パッケージ |
-|---|---------|---------|-------------|
-| 6-1 | `SBSqlFileLoader` | `SqlFileLoader` | `jp.vemi.batisfluid.sql` |
-| 6-2 | `SBSqlParser` | `SqlParser` | `jp.vemi.batisfluid.sql` |
-| 6-3 | `SBSqlProcessor` | `SqlProcessor` | `jp.vemi.batisfluid.sql` |
-| 6-4 | `SBSqlFormatter` | `SqlFormatter` | `jp.vemi.batisfluid.sql` |
-| 6-5 | `SBMyBatisSqlProcessor` | `MyBatisSqlProcessor` | `jp.vemi.batisfluid.sql` |
-| 6-6 | `SBDialect` | `Dialect` | `jp.vemi.batisfluid.sql.dialect` |
-| 6-7 | `SBQueryExecutor` | - | `SqlRunner`で既に対応（拡張検討） |
-
-### 推定工数
-- 作業時間: 4時間
-- テスト作成: 3時間
-
----
-
-## 📦 フェーズ7: クエリビルダーの移行（優先度: 高）
-
-### 理由
-ユーザーが最も頻繁に使用するAPIのため、早期に完成させるべきです。
-
-### 作業一覧
-
-| # | 旧クラス | 新クラス | 新パッケージ |
-|---|---------|---------|-------------|
-| 7-1 | `SBSelectBuilder` | `SelectFlow` | `jp.vemi.batisfluid.query` |
-| 7-2 | `SBUpdateBuilder` | `UpdateFlow` | `jp.vemi.batisfluid.query` |
-| 7-3 | `SBDeleteBuilder` | `DeleteFlow` | `jp.vemi.batisfluid.query` |
-| 7-4 | `SBSelect` | `SelectQuery` | `jp.vemi.batisfluid.query` |
-| 7-5 | `SBWhere` | `Where` | `jp.vemi.batisfluid.criteria` |
-| 7-6 | `SBOrderByCapable` | `OrderByCapable` | `jp.vemi.batisfluid.criteria` |
-| 7-7 | `SBWhereCapable` | `WhereCapable` | `jp.vemi.batisfluid.criteria` |
-| 7-8 | `SBSqlBuilder` | `SqlBuilder` | `jp.vemi.batisfluid.query` |
-
-### 注意事項
-- `SimpleWhere`, `ComplexWhere`, `AbstractWhere`はリネーム不要（計画通り）
-- ただし新パッケージへのコピーを検討
-
-### 推定工数
-- 作業時間: 5時間
-- テスト作成: 4時間
-
----
-
-## 📦 フェーズ8: トランザクション関連の移行（優先度: 低）
-
-### 理由
-内部実装であり、ユーザーが直接触れる機会が少ないため後回し。
-
-### 作業一覧
-
-| # | 旧クラス | 新クラス | 新パッケージ |
-|---|---------|---------|-------------|
-| 8-1 | `SBTransactionManager` | `TransactionManager` | `jp.vemi.batisfluid.transaction` |
-| 8-2 | `SBTransactionOperation` | `TransactionOperation` | `jp.vemi.batisfluid.transaction` |
-| 8-3 | `SBTransactionContext` | `TransactionContext` | `jp.vemi.batisfluid.transaction` |
-| 8-4 | `SBTransactionCallback` | `TransactionCallback` | `jp.vemi.batisfluid.transaction` |
-| 8-5 | `SBThreadLocalDataSource` | `ThreadLocalDataSource` | `jp.vemi.batisfluid.transaction` |
-
-### 推定工数
-- 作業時間: 3時間
-- テスト作成: 2時間
-
----
-
-## 📦 フェーズ9: ファサードの完成（優先度: 中）
-
-### 作業一覧
-
-| # | 旧クラス | 新クラス | 作業内容 |
-|---|---------|---------|---------|
-| 9-1 | `SBSqlSessionFactory` | `SqlSessionGateway` | 新規作成（オプション） |
-| 9-2 | `JdbcFlow` | - | delegation除去、独立実装化 |
-| 9-3 | `SqlRunner` | - | 機能拡張（全SQLメソッド対応） |
-
-### 推定工数
-- 作業時間: 3時間
-- テスト作成: 2時間
-
----
-
-## 📅 実行スケジュール（推奨順序）
-
-### Week 1: 基盤レイヤー
-| 日 | フェーズ | 作業内容 | 推定時間 |
-|---|--------|---------|---------|
-| Day 1 | 1 | 例外クラスの移行 | 3時間 |
-| Day 2 | 2 | アノテーションの移行 | 1.5時間 |
-| Day 2 | 3 | i18n/メッセージの移行 | 2時間 |
-| Day 3 | 4 | 設定ファイルの移行 | 1.5時間 |
-
-### Week 2: コア機能
-| 日 | フェーズ | 作業内容 | 推定時間 |
-|---|--------|---------|---------|
-| Day 4 | 5 | エンティティ関連の移行 | 5時間 |
-| Day 5 | 6 | SQL関連の移行 | 7時間 |
-
-### Week 3: ユーザー向けAPI
-| 日 | フェーズ | 作業内容 | 推定時間 |
-|---|--------|---------|---------|
-| Day 6-7 | 7 | クエリビルダーの移行 | 9時間 |
-| Day 8 | 8 | トランザクション関連の移行 | 5時間 |
-| Day 9 | 9 | ファサードの完成 | 5時間 |
-
-### Week 4: 統合・検証
-| 日 | 作業内容 | 推定時間 |
-|---|---------|---------|
-| Day 10 | 統合テスト実行 | 4時間 |
-| Day 11 | ドキュメント更新 | 3時間 |
-| Day 12 | コードレビュー・修正 | 4時間 |
-
----
-
-## ✅ 完了基準
+## ✅ 完了基準（達成済み）
 
 ### 各フェーズの完了条件
-1. 新クラスが作成され、コンパイルエラーがないこと
-2. 旧クラスに`@Deprecated`アノテーションが付与されていること
-3. 対応するユニットテストが作成され、パスすること
-4. Javadocが日本語で記述されていること
+1. ✅ 新クラスが作成され、コンパイルエラーがないこと
+2. ✅ 旧クラスに`@Deprecated`アノテーションが付与されていること
+3. ✅ 対応するユニットテストが作成され、パスすること
+4. ✅ Javadocが日本語で記述されていること
 
 ### 全体の完了条件
-1. `./gradlew clean check`がパスすること
-2. 統合テスト（H2）がパスすること
-3. 移行状況ドキュメントが100%完了に更新されていること
-4. CHANGELOGが更新されていること
+1. ✅ `./gradlew clean check`がパスすること
+2. ✅ 統合テスト（H2）がパスすること
+3. ✅ 移行状況ドキュメントが100%完了に更新されていること
+4. ⚠️ CHANGELOGが更新されていること（要確認）
 
 ---
 
-## 📝 注意事項
+## 📁 最終パッケージ構造
+---
 
-### パッケージ構造（新）
+## 📁 最終パッケージ構造
+
 ```
 jp.vemi.batisfluid/
-├── BatisFluid.java                 # エントリーポイント
+├── BatisFluid.java                 # エントリーポイント ✅
 ├── config/
-│   ├── FluidConfig.java
-│   ├── OptimisticLockConfig.java   ✅ 作成済み
-│   └── OptimisticLockConfigLoader.java ✅ 作成済み
+│   ├── FluidConfig.java            ✅
+│   ├── OptimisticLockConfig.java   ✅
+│   └── OptimisticLockConfigLoader.java ✅
 ├── core/
-│   ├── JdbcFlow.java               ✅ 作成済み
-│   └── SqlRunner.java              ✅ 作成済み
-├── criteria/
-│   ├── Where.java
-│   ├── SimpleWhere.java            (コピー)
-│   ├── ComplexWhere.java           (コピー)
-│   ├── AbstractWhere.java          (コピー)
-│   ├── OrderByCapable.java
-│   └── WhereCapable.java
+│   ├── JdbcFlow.java               ✅
+│   └── SqlRunner.java              ✅
 ├── entity/
-│   ├── EntityOperations.java
-│   ├── PrimaryKeyInfo.java
-│   └── OptimisticLockSupport.java
+│   ├── EntityOperations.java       ✅
+│   ├── PrimaryKeyInfo.java         ✅
+│   └── OptimisticLockSupport.java  ✅
 ├── exception/
-│   ├── FluidException.java
-│   ├── FluidSqlException.java
-│   ├── NoResultException.java
-│   ├── NonUniqueResultException.java
-│   ├── OptimisticLockException.java
-│   ├── SqlParseException.java
-│   ├── TypeConversionException.java
-│   ├── EntityException.java
-│   ├── FluidIllegalStateException.java
-│   └── TransactionException.java
+│   ├── FluidException.java         ✅
+│   ├── FluidSqlException.java      ✅
+│   ├── FluidIllegalStateException.java ✅
+│   ├── EntityException.java        ✅
+│   ├── TransactionException.java   ✅
+│   ├── OptimisticLockException.java ✅
+│   ├── SqlParseException.java      ✅
+│   ├── NoResultException.java      ✅
+│   ├── NonUniqueResultException.java ✅
+│   └── TypeConversionException.java ✅
 ├── i18n/
-│   ├── FluidLocale.java
-│   └── Messages.java
-├── mapping/
-│   ├── EntityMapper.java
-│   └── MyBatisMapper.java
+│   ├── FluidLocale.java            ✅
+│   └── Messages.java               ✅
 ├── meta/
-│   ├── FluidTable.java             (@interface)
-│   └── FluidColumn.java            (@interface)
+│   ├── FluidTable.java             ✅ (@interface)
+│   └── FluidColumn.java            ✅ (@interface)
 ├── query/
-│   ├── SelectFlow.java
-│   ├── UpdateFlow.java
-│   ├── DeleteFlow.java
-│   ├── SelectQuery.java
-│   └── SqlBuilder.java
+│   ├── SelectBuilder.java          ✅
+│   ├── UpdateBuilder.java          ✅
+│   ├── DeleteBuilder.java          ✅
+│   ├── SqlBuilder.java             ✅
+│   ├── Where.java                  ✅
+│   ├── SimpleWhere.java            ✅
+│   ├── ComplexWhere.java           ✅
+│   ├── AbstractWhere.java          ✅
+│   ├── WhereCapable.java           ✅
+│   ├── OrderByCapable.java         ✅
+│   └── OrderDirection.java         ✅
 ├── sql/
-│   ├── SqlFileLoader.java
-│   ├── SqlParser.java
-│   ├── SqlProcessor.java
-│   ├── SqlFormatter.java
-│   ├── MyBatisSqlProcessor.java
-│   └── dialect/
-│       └── Dialect.java
+│   ├── SqlFileLoader.java          ✅
+│   ├── SqlParser.java              ✅
+│   ├── SqlFormatter.java           ✅
+│   └── ParsedSql.java              ✅
 └── transaction/
-    ├── TransactionManager.java
-    ├── TransactionOperation.java
-    ├── TransactionContext.java
-    ├── TransactionCallback.java
-    └── ThreadLocalDataSource.java
+    ├── TransactionManager.java     ✅
+    ├── TransactionOperation.java   ✅
+    ├── TransactionContext.java     ✅
+    ├── TransactionCallback.java    ✅
+    ├── ThreadLocalDataSource.java  ✅
+    └── PropagationType.java        ✅
+
+jp.vemi.batisfluid.spring/
+├── config/
+│   └── BatisFluidAutoConfiguration.java ✅
+└── core/
+    └── SpringJdbcFlow.java         ✅
 ```
 
-### 移行時のコーディング規約
+### 移行時のコーディング規約（適用済み）
 - 著作権表記: `Copyright (C) 2025 VEMI, All Rights Reserved.`
 - バージョン: `@version 0.0.2`
 - Javadoc: 日本語で記述
