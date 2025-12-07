@@ -8,7 +8,7 @@ group = "jp.vemi"
 
 // Central Portal への公開は各モジュールで本プラグインを適用し設定します。
 
-// jackson-databind-jsonc をベースにした公開フロー用の補助タスク群です。
+// SeasarBatis の Maven Central 公開フローを補助するタスク群です。
 // シークレット名はこのリポジトリの既存運用（OSSRH_*, SIGNING_*）を前提としつつ、
 // Gradle には ORG_GRADLE_PROJECT_* 経由で渡されることを想定します。
 

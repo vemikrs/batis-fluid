@@ -62,7 +62,7 @@ git checkout -- lib/build.gradle.kts spring/build.gradle.kts
 
 ### 3. Credential Validation & Local Publishing
 
-Root `build.gradle.kts` provides helper tasks similar to jackson-databind-jsonc:
+Root `build.gradle.kts` provides helper tasks for SeasarBatis Maven Central publishing:
 
 ```bash
 # Validate Central Portal credentials (environment variables)
