@@ -68,6 +68,11 @@ java {
     withJavadocJar()
 }
 
+tasks.named<org.gradle.jvm.tasks.Jar>("jar").configure {
+    // Maven Central 上のアーティファクト名と揃えるため、JAR のベース名を明示します。
+    archiveBaseName.set("batis-fluid-core")
+}
+
 tasks.named<Test>("test").configure {
     useJUnitPlatform {
         val prop = System.getProperty("junitTags") ?: project.findProperty("junitTags")?.toString()
@@ -101,11 +106,20 @@ tasks.withType<Javadoc>().configureEach {
     val opts = options as? CoreJavadocOptions
     opts?.addStringOption("Xdoclint:none", "-quiet")
     opts?.addStringOption("Xmaxwarns", "1")
+    opts?.addBooleanOption("allow-script-in-comments", true)
     isFailOnError = false
 }
 
 tasks.named<JacocoReport>("jacocoTestReport").configure {
     reports { xml.required.set(false); csv.required.set(false); html.required.set(true) }
+}
+
+// Vanniktech Maven Publish プラグインが生成するプレーン Javadoc JAR と重複しないように、
+// mavenPlainJavadocJar タスクを無効化して、単一の Javadoc JAR のみを公開します。
+tasks.withType<org.gradle.jvm.tasks.Jar>().configureEach {
+    if (name == "mavenPlainJavadocJar") {
+        enabled = false
+    }
 }
 
 mavenPublishing {
@@ -115,7 +129,7 @@ mavenPublishing {
     pom {
         name.set("BatisFluid Core")
         description.set("Modern, minimal, pluggable MyBatis wrapper with fluent API and externalized SQL support")
-        url.set("https://github.com/vemikrs/seasar-batis")
+        url.set("https://github.com/vemikrs/batis-fluid")
         licenses {
             license {
                 name.set("The Apache License, Version 2.0")
@@ -130,9 +144,9 @@ mavenPublishing {
             }
         }
         scm {
-            connection.set("scm:git:git://github.com/vemikrs/seasar-batis.git")
-            developerConnection.set("scm:git:ssh://git@github.com/vemikrs/seasar-batis.git")
-            url.set("https://github.com/vemikrs/seasar-batis")
+            connection.set("scm:git:git://github.com/vemikrs/batis-fluid.git")
+            developerConnection.set("scm:git:ssh://git@github.com/vemikrs/batis-fluid.git")
+            url.set("https://github.com/vemikrs/batis-fluid")
         }
     }
 }

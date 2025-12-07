@@ -43,6 +43,11 @@ java {
     withJavadocJar()
 }
 
+tasks.named<org.gradle.jvm.tasks.Jar>("jar").configure {
+    // Maven Central 上のアーティファクト名と揃えるため、JAR のベース名を明示します。
+    archiveBaseName.set("batis-fluid-spring")
+}
+
 tasks.named<Test>("test").configure {
     useJUnitPlatform {
         val prop = System.getProperty("junitTags") ?: project.findProperty("junitTags")?.toString()
@@ -71,7 +76,7 @@ mavenPublishing {
     pom {
         name.set("BatisFluid Spring Integration")
         description.set("Spring Framework integration module for BatisFluid")
-        url.set("https://github.com/vemikrs/seasar-batis")
+        url.set("https://github.com/vemikrs/batis-fluid")
         licenses {
             license {
                 name.set("The Apache License, Version 2.0")
@@ -86,9 +91,9 @@ mavenPublishing {
             }
         }
         scm {
-            connection.set("scm:git:git://github.com/vemikrs/seasar-batis.git")
-            developerConnection.set("scm:git:ssh://git@github.com/vemikrs/seasar-batis.git")
-            url.set("https://github.com/vemikrs/seasar-batis")
+            connection.set("scm:git:git://github.com/vemikrs/batis-fluid.git")
+            developerConnection.set("scm:git:ssh://git@github.com/vemikrs/batis-fluid.git")
+            url.set("https://github.com/vemikrs/batis-fluid")
         }
     }
 }
@@ -101,4 +106,12 @@ tasks.named<org.gradle.language.jvm.tasks.ProcessResources>("processResources").
 // Configure sourcesJar task to handle duplicates
 tasks.named<org.gradle.jvm.tasks.Jar>("sourcesJar").configure {
     duplicatesStrategy = org.gradle.api.file.DuplicatesStrategy.EXCLUDE
+}
+
+// Vanniktech Maven Publish プラグインが生成するプレーン Javadoc JAR と重複しないように、
+// mavenPlainJavadocJar タスクを無効化して、単一の Javadoc JAR のみを公開します。
+tasks.withType<org.gradle.jvm.tasks.Jar>().configureEach {
+    if (name == "mavenPlainJavadocJar") {
+        enabled = false
+    }
 }
