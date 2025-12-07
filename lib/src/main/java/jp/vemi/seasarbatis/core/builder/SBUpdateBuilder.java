@@ -18,7 +18,10 @@ import jp.vemi.seasarbatis.jdbc.SBJdbcManager;
  * Fluent interfaceパターンでUPDATE文を組み立てます。
  * 
  * @param <E> エンティティの型
+ * @deprecated このクラスは将来のバージョンで削除予定です。
+ *             代わりに {@link jp.vemi.batisfluid.query.UpdateBuilder} を使用してください。
  */
+@Deprecated(since = "0.0.2", forRemoval = true)
 public class SBUpdateBuilder<E> implements SBWhereCapable<SBUpdateBuilder<E>> {
 
     private final SBJdbcManager jdbcManager;

@@ -3,9 +3,14 @@
  */
 package jp.vemi.seasarbatis.core.sql;
 
+import jp.vemi.batisfluid.sql.SqlFormatter;
+
 /**
  * SQL文を整形するユーティリティクラス。
+ *
+ * @deprecated v0.0.2以降は {@link SqlFormatter} を使用してください。
  */
+@Deprecated(since = "0.0.2", forRemoval = true)
 public class SBSqlFormatter {
 
     /**

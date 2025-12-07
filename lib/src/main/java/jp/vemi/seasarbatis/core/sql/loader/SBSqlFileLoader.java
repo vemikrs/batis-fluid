@@ -8,9 +8,14 @@ import java.io.Reader;
 
 import org.apache.ibatis.io.Resources;
 
+import jp.vemi.batisfluid.sql.SqlFileLoader;
+
 /**
  * SQLファイルを読み込むためのユーティリティクラスです。
+ *
+ * @deprecated v0.0.2以降は {@link SqlFileLoader} を使用してください。
  */
+@Deprecated(since = "0.0.2", forRemoval = true)
 public class SBSqlFileLoader {
     /**
      * 指定されたパスのSQLファイルを読み込みます。

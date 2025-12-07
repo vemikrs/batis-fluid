@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
+import jp.vemi.batisfluid.entity.PrimaryKeyInfo;
 import jp.vemi.seasarbatis.core.meta.SBColumnMeta;
 import jp.vemi.seasarbatis.exception.SBEntityException;
 
@@ -21,7 +22,9 @@ import jp.vemi.seasarbatis.exception.SBEntityException;
  * @author H.Kurosawa
  * @version 1.0.0
  * @since 2025/01/01
+ * @deprecated v0.0.2以降は {@link PrimaryKeyInfo} を使用してください。
  */
+@Deprecated(since = "0.0.2", forRemoval = true)
 public class SBPrimaryKeyInfo {
     
     private final List<Field> fields;

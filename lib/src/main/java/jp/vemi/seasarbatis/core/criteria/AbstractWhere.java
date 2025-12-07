@@ -8,6 +8,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * WHERE句構築の抽象基底クラス。
+ * 
+ * @param <T> 自身の型（流暢なAPIのため）
+ * @deprecated このクラスは将来のバージョンで削除予定です。
+ *             代わりに {@link jp.vemi.batisfluid.query.AbstractWhere} を使用してください。
+ */
+@Deprecated(since = "0.0.2", forRemoval = true)
 public class AbstractWhere<T extends AbstractWhere<T>> implements SBWhere {
 
     protected final List<String> conditions = new ArrayList<>();

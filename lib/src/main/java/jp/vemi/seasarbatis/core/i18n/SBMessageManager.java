@@ -8,6 +8,8 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import jp.vemi.batisfluid.i18n.Messages;
+
 /**
  * SeasarBatisの国際化メッセージを管理するクラスです。
  * <p>
@@ -19,7 +21,9 @@ import java.util.ResourceBundle;
  * @author H.Kurosawa
  * @version 1.0.0-beta1
  * @since 2025/01/01
+ * @deprecated v0.0.2以降は {@link Messages} を使用してください。
  */
+@Deprecated(since = "0.0.2", forRemoval = true)
 public class SBMessageManager {
     
     private static final String BUNDLE_NAME = "jp.vemi.seasarbatis.messages";

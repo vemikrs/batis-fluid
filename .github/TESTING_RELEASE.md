@@ -22,23 +22,7 @@ gradle wrapper --gradle-version 8.9      # Generate wrapper
 
 ## Testing Methods
 
-### 1. Pull Request Testing (Automatic)
-
-The release workflow automatically runs in test mode when:
-- A pull request modifies workflow or build files:
-  - `.github/workflows/release.yml`
-  - `build.gradle`
-  - `lib/build.gradle`
-  - `spring/build.gradle`
-  - `settings.gradle`
-
-**What happens in PR test mode:**
-- ✅ Builds both modules
-- ✅ Validates publishing configuration
-- ✅ Uses test version `1.0.0-test`
-- ⚠️ Skips GPG setup and Maven Central publishing
-
-### 2. Manual Dry Run Testing
+### 1. Manual Dry Run Testing
 
 You can manually test the workflow using GitHub Actions:
 
@@ -55,7 +39,7 @@ You can manually test the workflow using GitHub Actions:
 - ✅ Uses version `{your-version}-test`
 - ⚠️ Skips GPG setup and Maven Central publishing
 
-### 3. Local Testing
+### 2. Local Testing
 
 You can test the workflow logic locally:
 
@@ -66,15 +50,27 @@ export RELEASE_VERSION=1.0.0-test
 export MODE=TEST
 
 # Update versions (will be reverted)
-sed -i "s/version = '[^']*'/version = '$RELEASE_VERSION'/" lib/build.gradle
-sed -i "s/version = '[^']*'/version = '$RELEASE_VERSION'/" spring/build.gradle
+sed -i "s/version = \"[^\"]*\"/version = \"$RELEASE_VERSION\"/" lib/build.gradle.kts
+sed -i "s/version = \"[^\"]*\"/version = \"$RELEASE_VERSION\"/" spring/build.gradle.kts
 
 # Test build and publishing tasks
-./gradlew clean build -x test
+./gradlew clean build
 ./gradlew tasks --all | grep -i publish
 
 # Revert changes
-git checkout -- lib/build.gradle spring/build.gradle
+git checkout -- lib/build.gradle.kts spring/build.gradle.kts
+
+### 3. Credential Validation & Local Publishing
+
+Root `build.gradle.kts` provides helper tasks similar to jackson-databind-jsonc:
+
+```bash
+# Validate Central Portal credentials (environment variables)
+./gradlew validateCredentials
+
+# Publish all publications to local Maven repository only
+./gradlew publishLocalOnly
+```
 ```
 
 ## Production Release

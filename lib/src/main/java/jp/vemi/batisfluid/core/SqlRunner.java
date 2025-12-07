@@ -5,9 +5,12 @@ package jp.vemi.batisfluid.core;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 import org.apache.ibatis.session.SqlSessionFactory;
 
+import jp.vemi.batisfluid.transaction.PropagationType;
+import jp.vemi.batisfluid.transaction.TransactionManager;
 import jp.vemi.seasarbatis.jdbc.SBJdbcManager;
 
 /**
@@ -24,6 +27,7 @@ import jp.vemi.seasarbatis.jdbc.SBJdbcManager;
 public class SqlRunner {
     
     private final SBJdbcManager delegate;
+    private final TransactionManager transactionManager;
     
     /**
      * SqlRunnerを構築します。
@@ -32,6 +36,7 @@ public class SqlRunner {
      */
     public SqlRunner(SqlSessionFactory sqlSessionFactory) {
         this.delegate = new SBJdbcManager(sqlSessionFactory);
+        this.transactionManager = new TransactionManager(sqlSessionFactory);
     }
     
     /**
@@ -124,5 +129,45 @@ public class SqlRunner {
      */
     public int deleteBySqlFile(String sqlFile, Map<String, Object> params) {
         return delegate.deleteBySqlFile(sqlFile, params);
+    }
+    
+    // ========================================
+    // トランザクション制御メソッド
+    // ========================================
+    
+    /**
+     * トランザクション内で処理を実行します。
+     * <p>
+     * 既存のトランザクションがある場合はそれを使用し、
+     * ない場合は新規トランザクションを作成します。
+     * </p>
+     *
+     * @param <T> 戻り値の型
+     * @param action 実行する処理
+     * @return 処理の結果
+     */
+    public <T> T transaction(Callable<T> action) {
+        return transactionManager.execute(PropagationType.REQUIRED, action);
+    }
+    
+    /**
+     * 指定された伝播タイプでトランザクションを実行します。
+     *
+     * @param <T> 戻り値の型
+     * @param propagationType トランザクション伝播タイプ
+     * @param action 実行する処理
+     * @return 処理の結果
+     */
+    public <T> T transaction(PropagationType propagationType, Callable<T> action) {
+        return transactionManager.execute(propagationType, action);
+    }
+    
+    /**
+     * トランザクションマネージャを取得します。
+     *
+     * @return TransactionManager
+     */
+    public TransactionManager getTransactionManager() {
+        return transactionManager;
     }
 }

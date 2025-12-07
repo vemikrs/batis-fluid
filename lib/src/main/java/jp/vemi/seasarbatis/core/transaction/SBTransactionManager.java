@@ -20,7 +20,10 @@ import jp.vemi.seasarbatis.exception.SBTransactionException;
  * @author H.Kurosawa
  * @version 1.0.0
  * @since 2025/01/01
+ * @deprecated このクラスは将来のバージョンで削除予定です。
+ *             代わりに {@link jp.vemi.batisfluid.transaction.TransactionManager} を使用してください。
  */
+@Deprecated(since = "0.0.2", forRemoval = true)
 public class SBTransactionManager {
     private final SqlSessionFactory sqlSessionFactory;
     private final SBTransactionOperation txOperation;

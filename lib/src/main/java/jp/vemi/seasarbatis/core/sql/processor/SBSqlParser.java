@@ -17,6 +17,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
+import jp.vemi.batisfluid.sql.SqlParser;
 import jp.vemi.seasarbatis.core.sql.ParsedSql;
 import jp.vemi.seasarbatis.exception.SBSqlParseException;
 
@@ -35,7 +36,9 @@ import jp.vemi.seasarbatis.exception.SBSqlParseException;
  * @author H.Kurosawa
  * @version 1.0.0
  * @since 2025/01/01
+ * @deprecated v0.0.2以降は {@link SqlParser} を使用してください。
  */
+@Deprecated(since = "0.0.2", forRemoval = true)
 public class SBSqlParser {
     /**
      * SQLを解析し、実行可能な形式に変換します。

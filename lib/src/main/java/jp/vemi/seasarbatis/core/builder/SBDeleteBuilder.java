@@ -17,7 +17,10 @@ import jp.vemi.seasarbatis.jdbc.SBJdbcManager;
  * DELETE文を構築するビルダークラス。 Fluent interfaceパターンでDELETE文を組み立てます。
  * 
  * @param <E> エンティティの型
+ * @deprecated このクラスは将来のバージョンで削除予定です。
+ *             代わりに {@link jp.vemi.batisfluid.query.DeleteBuilder} を使用してください。
  */
+@Deprecated(since = "0.0.2", forRemoval = true)
 public class SBDeleteBuilder<E> implements SBWhereCapable<SBDeleteBuilder<E>> {
 
     private final SBJdbcManager jdbcManager;

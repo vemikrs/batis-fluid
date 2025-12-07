@@ -16,7 +16,10 @@ import jp.vemi.seasarbatis.core.i18n.SBMessageManager;
  * @author H.Kurosawa
  * @version 1.0.0
  * @since 2025/01/01
+ * @deprecated このクラスは将来のバージョンで削除予定です。
+ *             代わりに {@link jp.vemi.batisfluid.transaction.TransactionContext} を使用してください。
  */
+@Deprecated(since = "0.0.2", forRemoval = true)
 public class SBTransactionContext {
     
     private static final ThreadLocal<SBTransactionOperation> currentOperation = new ThreadLocal<>();

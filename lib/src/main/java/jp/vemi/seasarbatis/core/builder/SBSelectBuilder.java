@@ -22,7 +22,10 @@ import jp.vemi.seasarbatis.jdbc.SBJdbcManager;
  * SELECT文を構築するビルダークラス。 Fluent interfaceパターンでSELECT文を組み立てます。
  * 
  * @param <E> エンティティの型
+ * @deprecated このクラスは将来のバージョンで削除予定です。
+ *             代わりに {@link jp.vemi.batisfluid.query.SelectBuilder} を使用してください。
  */
+@Deprecated(since = "0.0.2", forRemoval = true)
 public class SBSelectBuilder<E> implements SBWhereCapable<SBSelectBuilder<E>>, SBOrderByCapable<SBSelectBuilder<E>> {
 
     private final SBJdbcManager jdbcManager;

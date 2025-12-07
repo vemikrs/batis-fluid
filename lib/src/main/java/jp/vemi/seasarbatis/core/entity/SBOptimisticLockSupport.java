@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import jp.vemi.batisfluid.entity.OptimisticLockSupport;
 import jp.vemi.seasarbatis.core.config.SBOptimisticLockConfig;
 import jp.vemi.seasarbatis.core.config.SBOptimisticLockConfig.EntityLockConfig;
 import jp.vemi.seasarbatis.core.config.SBOptimisticLockConfig.LockType;
@@ -28,7 +29,9 @@ import jp.vemi.seasarbatis.exception.SBIllegalStateException;
  * @author H.Kurosawa
  * @version 1.0.0
  * @since 2025/08/23
+ * @deprecated v0.0.2以降は {@link OptimisticLockSupport} を使用してください。
  */
+@Deprecated(since = "0.0.2", forRemoval = true)
 public class SBOptimisticLockSupport {
     
     /**

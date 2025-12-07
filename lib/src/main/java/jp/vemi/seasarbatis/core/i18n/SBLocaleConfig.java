@@ -5,6 +5,8 @@ package jp.vemi.seasarbatis.core.i18n;
 
 import java.util.Locale;
 
+import jp.vemi.batisfluid.i18n.FluidLocale;
+
 /**
  * SeasarBatisの国際化設定を管理するクラスです。
  * <p>
@@ -15,7 +17,9 @@ import java.util.Locale;
  * @author H.Kurosawa
  * @version 1.0.0-beta1
  * @since 2025/01/01
+ * @deprecated v0.0.2以降は {@link FluidLocale} を使用してください。
  */
+@Deprecated(since = "0.0.2", forRemoval = true)
 public class SBLocaleConfig {
     
     private static final SBLocaleConfig INSTANCE = new SBLocaleConfig();

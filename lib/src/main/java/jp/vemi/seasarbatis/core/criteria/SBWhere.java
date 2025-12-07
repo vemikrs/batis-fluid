@@ -8,7 +8,11 @@ import java.util.Map;
 /**
  * SQL WHERE句を構築するためのインターフェース。
  * 条件式の生成と結合をサポートします。
+ * 
+ * @deprecated このインターフェースは将来のバージョンで削除予定です。
+ *             代わりに {@link jp.vemi.batisfluid.query.Where} を使用してください。
  */
+@Deprecated(since = "0.0.2", forRemoval = true)
 public interface SBWhere {
 
     /**
