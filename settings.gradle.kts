@@ -5,6 +5,6 @@ pluginManagement {
     }
 }
 
-rootProject.name = "seasar-batis"
+rootProject.name = "batis-fluid"
 include("lib")
 include("spring")

@@ -8,8 +8,8 @@
 
 ## リポジトリ取得
 ```bash
-git clone git@github.com:vemikrs/seasar-batis.git
-cd seasar-batis
+git clone git@github.com:vemikrs/batis-fluid.git
+cd batis-fluid
 ```
 
 ## Gradle Wrapper の整備
