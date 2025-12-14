@@ -37,11 +37,12 @@ import jp.vemi.seasarbatis.core.criteria.SimpleWhere;
 import jp.vemi.seasarbatis.core.entity.SBOptimisticLockSupport;
 import jp.vemi.seasarbatis.core.entity.SBOptimisticLockSupport.OptimisticLockInfo;
 import jp.vemi.seasarbatis.core.query.SBSelect;
+import jp.vemi.seasarbatis.core.sql.dialect.SBDialect;
+import jp.vemi.seasarbatis.core.sql.dialect.SBDialectResolver;
 import jp.vemi.seasarbatis.core.sql.executor.SBQueryExecutor;
 import jp.vemi.seasarbatis.core.transaction.SBTransactionCallback;
 import jp.vemi.seasarbatis.core.transaction.SBTransactionManager;
 import jp.vemi.seasarbatis.core.transaction.SBTransactionManager.PropagationType;
-import jp.vemi.seasarbatis.core.transaction.SBTransactionOperation;
 import jp.vemi.seasarbatis.exception.SBException;
 import jp.vemi.seasarbatis.exception.SBIllegalStateException;
 import jp.vemi.seasarbatis.exception.SBOptimisticLockException;
@@ -85,7 +86,17 @@ public class SBJdbcManager {
      * @param sqlSessionFactory {@link SqlSessionFactory}
      */
     public SBJdbcManager(SqlSessionFactory sqlSessionFactory) {
-        this(sqlSessionFactory, new SBOptimisticLockConfig());
+        this(sqlSessionFactory, new SBOptimisticLockConfig(), SBDialectResolver.resolve(sqlSessionFactory.getConfiguration()));
+    }
+
+    /**
+     * {@link SBJdbcManager}を構築します。
+     *
+     * @param sqlSessionFactory {@link SqlSessionFactory}
+     * @param dialect データベースダイアレクト
+     */
+    public SBJdbcManager(SqlSessionFactory sqlSessionFactory, SBDialect dialect) {
+        this(sqlSessionFactory, new SBOptimisticLockConfig(), dialect);
     }
 
     /**
@@ -95,10 +106,21 @@ public class SBJdbcManager {
      * @param optimisticLockConfig 楽観的排他制御設定
      */
     public SBJdbcManager(SqlSessionFactory sqlSessionFactory, SBOptimisticLockConfig optimisticLockConfig) {
+        this(sqlSessionFactory, optimisticLockConfig, SBDialectResolver.resolve(sqlSessionFactory.getConfiguration()));
+    }
+
+    /**
+     * {@link SBJdbcManager}を構築します。
+     *
+     * @param sqlSessionFactory {@link SqlSessionFactory}
+     * @param optimisticLockConfig 楽観的排他制御設定
+     * @param dialect データベースダイアレクト
+     */
+    public SBJdbcManager(SqlSessionFactory sqlSessionFactory, SBOptimisticLockConfig optimisticLockConfig, SBDialect dialect) {
         this.sqlSessionFactory = sqlSessionFactory;
         this.optimisticLockConfig = optimisticLockConfig;
         this.txManager = new SBTransactionManager(sqlSessionFactory);
-        this.queryExecutor = new SBQueryExecutor(sqlSessionFactory.getConfiguration(), txManager.getTransactionOperation());
+        this.queryExecutor = new SBQueryExecutor(sqlSessionFactory.getConfiguration(), txManager.getTransactionOperation(), dialect);
     }
 
     /**
@@ -107,7 +129,17 @@ public class SBJdbcManager {
      * @param dataSource {@link DataSource}
      */
     public SBJdbcManager(DataSource dataSource) {
-        this(createSqlSessionFactory(dataSource), new SBOptimisticLockConfig());
+        this(createSqlSessionFactory(dataSource), new SBOptimisticLockConfig(), SBDialectResolver.resolve(dataSource));
+    }
+
+    /**
+     * {@link SBJdbcManager}を構築します。
+     *
+     * @param dataSource {@link DataSource}
+     * @param dialect データベースダイアレクト
+     */
+    public SBJdbcManager(DataSource dataSource, SBDialect dialect) {
+        this(createSqlSessionFactory(dataSource), new SBOptimisticLockConfig(), dialect);
     }
 
     /**
@@ -117,7 +149,18 @@ public class SBJdbcManager {
      * @param optimisticLockConfig 楽観的排他制御設定
      */
     public SBJdbcManager(DataSource dataSource, SBOptimisticLockConfig optimisticLockConfig) {
-        this(createSqlSessionFactory(dataSource), optimisticLockConfig);
+        this(createSqlSessionFactory(dataSource), optimisticLockConfig, SBDialectResolver.resolve(dataSource));
+    }
+
+    /**
+     * {@link SBJdbcManager}を構築します。
+     *
+     * @param dataSource {@link DataSource}
+     * @param optimisticLockConfig 楽観的排他制御設定
+     * @param dialect データベースダイアレクト
+     */
+    public SBJdbcManager(DataSource dataSource, SBOptimisticLockConfig optimisticLockConfig, SBDialect dialect) {
+        this(createSqlSessionFactory(dataSource), optimisticLockConfig, dialect);
     }
 
     /**
