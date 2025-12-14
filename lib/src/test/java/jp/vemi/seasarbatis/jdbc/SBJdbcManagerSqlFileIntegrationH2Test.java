@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
  * @version 0.0.1
  * @author VEMI
  */
-@Tag("integration")
+@Tag("legacy-integration")
 class SBJdbcManagerSqlFileIntegrationH2Test {
 
     private static DataSource h2DataSource;

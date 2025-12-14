@@ -32,7 +32,7 @@ import org.testcontainers.utility.DockerImageName;
  * @version 0.0.1
  * @author VEMI
  */
-@Tag("integration")
+@Tag("legacy-integration")
 class SBJdbcManagerSqlFileIntegrationPostgresTest {
 
     private static PostgreSQLContainer<?> postgresContainer;

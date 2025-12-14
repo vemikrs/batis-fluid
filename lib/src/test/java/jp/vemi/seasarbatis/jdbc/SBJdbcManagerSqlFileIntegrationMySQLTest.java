@@ -35,7 +35,7 @@ import java.time.Duration;
  * @version 0.0.1
  * @author VEMI
  */
-@Tag("integration")
+@Tag("legacy-integration")
 class SBJdbcManagerSqlFileIntegrationMySQLTest {
 
     private static MySQLContainer<?> mysqlContainer;
