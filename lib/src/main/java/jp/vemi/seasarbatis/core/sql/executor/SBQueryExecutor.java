@@ -17,6 +17,8 @@ import org.slf4j.LoggerFactory;
 
 import jp.vemi.seasarbatis.core.sql.CommandType;
 import jp.vemi.seasarbatis.core.sql.ProcessedSql;
+import jp.vemi.seasarbatis.core.sql.dialect.PostgresDialect;
+import jp.vemi.seasarbatis.core.sql.dialect.SBDialect;
 import jp.vemi.seasarbatis.core.sql.loader.SBSqlFileLoader;
 import jp.vemi.seasarbatis.core.sql.processor.SBSqlProcessor;
 import jp.vemi.seasarbatis.core.transaction.SBTransactionOperation;
@@ -47,7 +49,18 @@ public class SBQueryExecutor {
      * @param txOperation トランザクション操作
      */
     public SBQueryExecutor(SqlSessionFactory sqlSessionFactory, SBTransactionOperation txOperation) {
-        this.sqlProcessor = new SBSqlProcessor(sqlSessionFactory.getConfiguration());
+        this(sqlSessionFactory, txOperation, new PostgresDialect());
+    }
+
+    /**
+     * SBQueryExecutorを構築します。（SQLセッションファクトリ指定）
+     *
+     * @param sqlSessionFactory {@link SqlSessionFactory}
+     * @param txOperation トランザクション操作
+     * @param dialect データベースダイアレクト
+     */
+    public SBQueryExecutor(SqlSessionFactory sqlSessionFactory, SBTransactionOperation txOperation, SBDialect dialect) {
+        this.sqlProcessor = new SBSqlProcessor(sqlSessionFactory.getConfiguration(), dialect);
         this.txOperation = txOperation;
     }
 
@@ -58,7 +71,18 @@ public class SBQueryExecutor {
      * @param txOperation トランザクション操作
      */
     public SBQueryExecutor(Configuration configuration, SBTransactionOperation txOperation) {
-        this.sqlProcessor = new SBSqlProcessor(configuration);
+        this(configuration, txOperation, new PostgresDialect());
+    }
+
+    /**
+     * SBQueryExecutorを構築します。（設定オブジェクト指定）
+     *
+     * @param configuration MyBatis設定オブジェクト
+     * @param txOperation トランザクション操作
+     * @param dialect データベースダイアレクト
+     */
+    public SBQueryExecutor(Configuration configuration, SBTransactionOperation txOperation, SBDialect dialect) {
+        this.sqlProcessor = new SBSqlProcessor(configuration, dialect);
         this.txOperation = txOperation;
     }
 
