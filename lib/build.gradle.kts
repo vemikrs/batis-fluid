@@ -28,7 +28,7 @@ dependencies {
     testImplementation("com.h2database:h2:2.4.240")
     testImplementation("com.mysql:mysql-connector-j:9.5.0")
     testImplementation("org.postgresql:postgresql:42.7.8")
-    testImplementation("com.microsoft.sqlserver:mssql-jdbc:13.3.0.jre11")
+    testImplementation("com.microsoft.sqlserver:mssql-jdbc:13.2.1.jre11")
     testImplementation("com.oracle.database.jdbc:ojdbc11:23.26.0.0.0")
 
     // Testcontainers for integration testing (align to latest stable)
