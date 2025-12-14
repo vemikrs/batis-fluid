@@ -3,6 +3,7 @@ plugins {
     id("java-library")
     id("com.vanniktech.maven.publish")
     id("jacoco")
+    id("com.github.ben-manes.versions") version "0.53.0"
 }
 
 import com.vanniktech.maven.publish.JavaLibrary
@@ -27,8 +28,8 @@ dependencies {
     testImplementation("com.h2database:h2:2.4.240")
     testImplementation("com.mysql:mysql-connector-j:9.5.0")
     testImplementation("org.postgresql:postgresql:42.7.8")
-    testImplementation("com.microsoft.sqlserver:mssql-jdbc:13.2.1.jre11")
-    testImplementation("com.oracle.database.jdbc:ojdbc11:23.9.0.25.07")
+    testImplementation("com.microsoft.sqlserver:mssql-jdbc:13.3.0.jre11")
+    testImplementation("com.oracle.database.jdbc:ojdbc11:23.26.0.0.0")
 
     // Testcontainers for integration testing (align to latest stable)
     testImplementation("org.testcontainers:testcontainers-junit-jupiter:2.0.2")
@@ -48,7 +49,7 @@ dependencies {
     implementation("org.mybatis.generator:mybatis-generator-core:1.4.2")
     implementation("org.apache.commons:commons-math3:3.6.1")
     implementation("org.apache.commons:commons-lang3:3.18.0")
-    implementation("com.google.guava:guava:33.4.8-jre")
+    implementation("com.google.guava:guava:33.5.0-jre")
     implementation("org.apache.commons:commons-dbcp2:2.13.0")
 
     // Runtime only dependencies are not added to the compile classpath of projects that depend on this project.
@@ -62,7 +63,7 @@ dependencies {
 
     // SLF4J for logging
     implementation("org.slf4j:slf4j-api:2.0.17")
-    implementation("ch.qos.logback:logback-classic:1.5.21")
+    implementation("ch.qos.logback:logback-classic:1.5.22")
 }
 
 java {
