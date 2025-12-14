@@ -25,7 +25,7 @@ CREATE TABLE sbtest_users (
     attachment BLOB,
 
     -- 列挙型 (H2では文字列として表現)
-    status VARCHAR(20) CHECK (status IN ('ACTIVE', 'INACTIVE', 'DELETED')),
+    status VARCHAR(20),
     user_type VARCHAR(50), -- H2では SET 型を直接サポートしないため VARCHAR を使用
     
     -- JSON型 (H2では TEXT として格納)
