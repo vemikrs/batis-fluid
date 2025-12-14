@@ -1,7 +1,9 @@
 ## リポジトリ基礎情報
-- このリポジトリは Seasar2 ライクな MyBatis 実装を提供するプロジェクトです。
+- このリポジトリは「BatisFluid」（旧 SeasarBatis）プロジェクトです。
+- Seasar2 (S2JDBC) ライクな流れるようなインターフェース (Fluent API) を提供する MyBatis ラッパーライブラリです。
 - Gradle ベースの Java ライブラリプロジェクトです。
 - Gradle のバージョンは 9.1 を使用しています。
+- Java 21 を使用しています。
 
 ## 回答について
 - 生成するコードは、修正しない箇所は可能な範囲で省略してください。ただし、反映箇所が分かる行やコメントは残してください。
@@ -12,32 +14,36 @@
 - 日本語で記述してください。
 
 ## このプロジェクトについて
-- プロジェクト名は「SeasarBatis」です。
-- このプロジェクトは、Seasar2 の S2TIGER プロジェクトのインタフェースや仕様を参考にしていますが、Seasar2 プロジェクトとは無関係です。
+- プロジェクト名は「BatisFluid」です。
+- このプロジェクトは、Seasar2 の S2TIGER (S2JDBC) プロジェクトのインタフェースや仕様を参考にしていますが、Seasar2 プロジェクトとは無関係です。
+- 現在、旧パッケージ `jp.vemi.seasarbatis` から新パッケージ `jp.vemi.batisfluid` への移行期間中です。
 
 ## ルール
 ### 基本構成
-- 各種設定や依存関係は、以下の複数の`build.gradle`ファイルに記述します。
-  - `build.gradle` (ルートプロジェクト)
-  - `lib/build.gradle` (コアモジュール)
-  - `spring/build.gradle` (Spring 統合モジュール)
+- 各種設定や依存関係は、以下の複数の`build.gradle.kts`ファイルに記述します。
+  - `build.gradle.kts` (ルートプロジェクト)
+  - `lib/build.gradle.kts` (コアモジュール)
+  - `spring/build.gradle.kts` (Spring 統合モジュール)
 
 ### Java コーディング規約
-- 基本パッケージ名は「jp.vemi.seasarbatis」を使用します。
+- 基本パッケージ名は「jp.vemi.batisfluid」を使用します。
+  - 旧機能のメンテナンス時は「jp.vemi.seasarbatis」を使用する場合があります。
 - 可視性が private 以外のメソッド、クラスについて、常に Javadoc コメントを日本語で記述します。
   - Javadoc コメントは、メソッドやクラスの説明、引数の説明、戻り値の説明、例外の説明を記述します。
   - Javadoc コメントは、`/**`で始まり、`*/`で終わります。
   - Javadoc コメントの各行は、`*`で始めます。
   - クラスのJavadocコメントは、先頭に簡単なクラスの説明、次行以降で`<p>`タグで囲った詳細なクラスの説明、パラメータにバージョン情報、作成者情報を記述します。
-  - Javadocコメントに記述するバージョンは、リリースバージョンを記述します。リリースバージョンは対応する `build.gradle` ファイルのバージョンを参照します。
+  - Javadocコメントに記述するバージョンは、リリースバージョンを記述します。リリースバージョンは対応する `build.gradle.kts` ファイルのバージョンを参照します。
 - Javaファイルの先頭に著作権を表記します。記述例は以下の通りです。
-  ```
+  ```java
   /*
-  * Copyright (C) 2025 VEMI, All Rights Reserved.
-  */
+   * Copyright (C) 2025 VEMI, All Rights Reserved.
+   */
   ```
-- Java のクラス名には基本的に SeasarBatis の略である、「SB」を付与します。
-  - 但し、SimpleWhere、ComplexWhere などの criteria 関連クラスでは、Seasar2 と同様のクラス名を使用します。
+- クラス名の命名規則：
+  - 新規作成するクラスには、プレフィックス（「SB」など）を付与せず、シンプルで直感的な名前を使用します。（例: `JdbcFlow`, `SelectBuilder`）
+  - 旧 `SeasarBatis` パッケージのクラスには「SB」が付与されていますが、新規コードではこれを踏襲しません。
+  - `SimpleWhere`, `ComplexWhere` などの criteria 関連クラスでは、Seasar2 と同様のクラス名を使用します。
 - メソッド名や変数はシンプルで直感的にわかりやすい名前を付与します。
 - メソッド名や変数において、ハンガリック記法は可能な限り使用しません。
 - テストクラスは、テスト対象のクラス名に「Test」を付与します。
