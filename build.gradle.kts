@@ -35,6 +35,13 @@ tasks.register("validateCredentials") {
                     "Set ORG_GRADLE_PROJECT_mavenCentralUsername / ORG_GRADLE_PROJECT_mavenCentralPassword."
             )
         }
+
+        if (signingKey.isNullOrBlank() || signingPass.isNullOrBlank()) {
+            error(
+                "GPG signing credentials are not configured. " +
+                    "Set ORG_GRADLE_PROJECT_signingInMemoryKey / ORG_GRADLE_PROJECT_signingInMemoryKeyPassword."
+            )
+        }
     }
 }
 

@@ -119,12 +119,25 @@ jobs:
         echo "📋 Validating publishing configuration..."
         ./gradlew tasks --all | grep -E "publish(All|ToMavenLocal|ToMavenCentral|Publication)" || true
         echo "✅ Publishing tasks available"
+
+    - name: Validate publishing credentials
+      if: ${{ steps.set_mode.outputs.dry_run == 'false' }}
+      env:
+        # Central Portal の認証情報（運用中の secret 名に合わせて複数候補を許容）
+        ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME || secrets.OSSRH_USERNAME }}
+        ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD || secrets.OSSRH_PASSWORD }}
+        ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_SECRET_KEY }}
+        ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
+      run: |
+        echo "🔐 Validating publishing credentials..."
+        ./gradlew validateCredentials --no-daemon
+        echo "✅ Credentials look configured"
         
     - name: Publish to Maven Central (Central Portal)
       if: ${{ steps.set_mode.outputs.dry_run == 'false' }}
       env:
-        ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.OSSRH_USERNAME }}
-        ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.OSSRH_PASSWORD }}
+        ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME || secrets.OSSRH_USERNAME }}
+        ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD || secrets.OSSRH_PASSWORD }}
         ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_SECRET_KEY }}
         ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
       run: |
