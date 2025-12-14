@@ -5,6 +5,9 @@ plugins {
     id("jacoco")
 }
 
+import com.vanniktech.maven.publish.JavaLibrary
+import com.vanniktech.maven.publish.JavadocJar
+
 group = "jp.vemi"
 version = "0.0.2"
 
@@ -64,8 +67,6 @@ dependencies {
 
 java {
     toolchain { languageVersion.set(JavaLanguageVersion.of(21)) }
-    withSourcesJar()
-    withJavadocJar()
 }
 
 tasks.named<org.gradle.jvm.tasks.Jar>("jar").configure {
@@ -106,7 +107,8 @@ tasks.withType<Javadoc>().configureEach {
     val opts = options as? CoreJavadocOptions
     opts?.addStringOption("Xdoclint:none", "-quiet")
     opts?.addStringOption("Xmaxwarns", "1")
-    opts?.addBooleanOption("allow-script-in-comments", true)
+    // JDK 21 の javadoc は --allow-script-in-comments を要求します（Gradle 側が先頭に '-' を付与するため、ここでは先頭に '-' を付けます）
+    opts?.addBooleanOption("-allow-script-in-comments", true)
     isFailOnError = false
 }
 
@@ -114,17 +116,17 @@ tasks.named<JacocoReport>("jacocoTestReport").configure {
     reports { xml.required.set(false); csv.required.set(false); html.required.set(true) }
 }
 
-// Vanniktech Maven Publish プラグインが生成するプレーン Javadoc JAR と重複しないように、
-// mavenPlainJavadocJar タスクを無効化して、単一の Javadoc JAR のみを公開します。
-tasks.withType<org.gradle.jvm.tasks.Jar>().configureEach {
-    if (name == "mavenPlainJavadocJar") {
-        enabled = false
-    }
-}
-
 mavenPublishing {
+    // 「何を公開するか」はプラグインの公式 API で定義します（Javadoc/Sources の重複を防止）。
+    configure(JavaLibrary(JavadocJar.Javadoc(), true))
     publishToMavenCentral(com.vanniktech.maven.publish.SonatypeHost.CENTRAL_PORTAL)
-    signAllPublications()
+
+    val signingKey = (findProperty("signingInMemoryKey") as? String)
+        ?: System.getenv("ORG_GRADLE_PROJECT_signingInMemoryKey")
+    if (!signingKey.isNullOrBlank()) {
+        signAllPublications()
+    }
+
     coordinates("jp.vemi", "batis-fluid-core", version.toString())
     pom {
         name.set("BatisFluid Core")
