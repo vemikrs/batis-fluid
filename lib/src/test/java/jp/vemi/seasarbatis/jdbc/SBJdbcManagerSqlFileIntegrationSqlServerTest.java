@@ -94,6 +94,7 @@ class SBJdbcManagerSqlFileIntegrationSqlServerTest {
         dataSource.setUser(sqlServerContainer.getUsername());
         dataSource.setPassword(sqlServerContainer.getPassword());
         dataSource.setTrustServerCertificate(true);
+        dataSource.setSendStringParametersAsUnicode(true);
         return dataSource;
     }
 
