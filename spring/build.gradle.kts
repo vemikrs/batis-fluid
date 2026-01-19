@@ -24,7 +24,7 @@ repositories { mavenCentral() }
 
 dependencies {
     api(project(":lib"))
-    api("org.springframework.boot:spring-boot-autoconfigure:3.5.8")
+    api("org.springframework.boot:spring-boot-autoconfigure:4.0.1")
     api("org.springframework:spring-context:7.0.3")
     api("org.springframework:spring-beans:7.0.3")
     api("org.mybatis:mybatis-spring:3.0.5")
@@ -33,7 +33,7 @@ dependencies {
     implementation("org.springframework:spring-tx:7.0.3")
     implementation("org.springframework:spring-jdbc:7.0.3")
 
-    testImplementation("org.springframework.boot:spring-boot-starter-test:3.5.8")
+    testImplementation("org.springframework.boot:spring-boot-starter-test:4.0.1")
     testImplementation("org.junit.jupiter:junit-jupiter-api:6.0.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:6.0.2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
