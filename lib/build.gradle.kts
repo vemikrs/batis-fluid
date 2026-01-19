@@ -16,9 +16,9 @@ repositories { mavenCentral() }
 
 dependencies {
     // Use JUnit Jupiter for testing.
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.12.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:6.0.2")
     testImplementation("org.mockito:mockito-junit-jupiter:5.20.0")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.12.1")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:6.0.2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.12.2")
 
     // Mockito for mocking in tests.

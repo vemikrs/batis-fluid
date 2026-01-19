@@ -34,8 +34,8 @@ dependencies {
     implementation("org.springframework:spring-jdbc:6.2.15")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test:3.5.8")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.12.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.12.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:6.0.2")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:6.0.2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("com.h2database:h2:2.4.240")
 }
