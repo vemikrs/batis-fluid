@@ -17,26 +17,26 @@ repositories { mavenCentral() }
 dependencies {
     // Use JUnit Jupiter for testing.
     testImplementation("org.junit.jupiter:junit-jupiter-api:6.0.2")
-    testImplementation("org.mockito:mockito-junit-jupiter:5.20.0")
+    testImplementation("org.mockito:mockito-junit-jupiter:5.21.0")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:6.0.2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher:6.0.2")
 
     // Mockito for mocking in tests.
-    testImplementation("org.mockito:mockito-core:5.20.0")
+    testImplementation("org.mockito:mockito-core:5.21.0")
 
     // Database dependencies for testing.
     testImplementation("com.h2database:h2:2.4.240")
     testImplementation("com.mysql:mysql-connector-j:9.5.0")
-    testImplementation("org.postgresql:postgresql:42.7.8")
+    testImplementation("org.postgresql:postgresql:42.7.9")
     testImplementation("com.microsoft.sqlserver:mssql-jdbc:13.2.1.jre11")
     testImplementation("com.oracle.database.jdbc:ojdbc11:23.26.0.0.0")
 
     // Testcontainers for integration testing (align to latest stable)
-    testImplementation("org.testcontainers:testcontainers-junit-jupiter:2.0.2")
-    testImplementation("org.testcontainers:testcontainers-mysql:2.0.2")
-    testImplementation("org.testcontainers:testcontainers-postgresql:2.0.2")
-    testImplementation("org.testcontainers:testcontainers-mssqlserver:2.0.2")
-    testImplementation("org.testcontainers:testcontainers-oracle-xe:2.0.2")
+    testImplementation("org.testcontainers:testcontainers-junit-jupiter:2.0.3")
+    testImplementation("org.testcontainers:testcontainers-mysql:2.0.3")
+    testImplementation("org.testcontainers:testcontainers-postgresql:2.0.3")
+    testImplementation("org.testcontainers:testcontainers-mssqlserver:2.0.3")
+    testImplementation("org.testcontainers:testcontainers-oracle-xe:2.0.3")
 
     // AssertJ for fluent assertions
     testImplementation("org.assertj:assertj-core:3.27.6")
@@ -48,9 +48,9 @@ dependencies {
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     implementation("org.mybatis.generator:mybatis-generator-core:1.4.2")
     implementation("org.apache.commons:commons-math3:3.6.1")
-    implementation("org.apache.commons:commons-lang3:3.18.0")
+    implementation("org.apache.commons:commons-lang3:3.20.0")
     implementation("com.google.guava:guava:33.5.0-jre")
-    implementation("org.apache.commons:commons-dbcp2:2.13.0")
+    implementation("org.apache.commons:commons-dbcp2:2.14.0")
 
     // Runtime only dependencies are not added to the compile classpath of projects that depend on this project.
     runtimeOnly("com.mysql:mysql-connector-j:9.5.0")
@@ -63,7 +63,7 @@ dependencies {
 
     // SLF4J for logging
     implementation("org.slf4j:slf4j-api:2.0.17")
-    implementation("ch.qos.logback:logback-classic:1.5.22")
+    implementation("ch.qos.logback:logback-classic:1.5.25")
 }
 
 java {
