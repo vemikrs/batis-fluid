@@ -5,6 +5,7 @@ plugins {
 
 import com.vanniktech.maven.publish.JavaLibrary
 import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.SourcesJar
 
 group = "jp.vemi"
 version = "0.0.2"
@@ -73,8 +74,8 @@ tasks.withType<Javadoc>().configureEach {
 
 mavenPublishing {
     // 「何を公開するか」はプラグインの公式 API で定義します（Javadoc/Sources の重複を防止）。
-    configure(JavaLibrary(JavadocJar.Javadoc(), true))
-    publishToMavenCentral(com.vanniktech.maven.publish.SonatypeHost.CENTRAL_PORTAL)
+    configure(JavaLibrary(javadocJar = JavadocJar.Javadoc(), sourcesJar = SourcesJar.Sources()))
+    publishToMavenCentral()
 
     val signingKey = (findProperty("signingInMemoryKey") as? String)
         ?: System.getenv("ORG_GRADLE_PROJECT_signingInMemoryKey")
