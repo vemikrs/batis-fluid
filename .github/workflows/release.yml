@@ -73,7 +73,7 @@ jobs:
           find ~/.m2/repository/jp/vemi -name "*.jar" -ls 2>/dev/null || echo "No local Maven artifacts found"
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: release-artifacts
           path: |
@@ -89,7 +89,7 @@ jobs:
 
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: release-artifacts
           path: ./artifacts
