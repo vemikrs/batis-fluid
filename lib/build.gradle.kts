@@ -44,7 +44,7 @@ dependencies {
 
     // This dependency is exported to consumers, that is to say found on their compile classpath.
     api("org.mybatis:mybatis:3.5.19")
-    api("org.mybatis:mybatis-spring:3.0.5")
+    api("org.mybatis:mybatis-spring:4.0.0")
 
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     implementation("org.mybatis.generator:mybatis-generator-core:1.4.2")
