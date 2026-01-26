@@ -40,7 +40,7 @@ dependencies {
     testImplementation("org.testcontainers:testcontainers-oracle-xe:2.0.3")
 
     // AssertJ for fluent assertions
-    testImplementation("org.assertj:assertj-core:3.27.6")
+    testImplementation("org.assertj:assertj-core:3.27.7")
 
     // This dependency is exported to consumers, that is to say found on their compile classpath.
     api("org.mybatis:mybatis:3.5.19")
@@ -64,7 +64,7 @@ dependencies {
 
     // SLF4J for logging
     implementation("org.slf4j:slf4j-api:2.0.17")
-    implementation("ch.qos.logback:logback-classic:1.5.25")
+    implementation("ch.qos.logback:logback-classic:1.5.26")
 }
 
 java {
