@@ -27,7 +27,7 @@ dependencies {
 
     // Database dependencies for testing.
     testImplementation("com.h2database:h2:2.4.240")
-    testImplementation("com.mysql:mysql-connector-j:9.5.0")
+    testImplementation("com.mysql:mysql-connector-j:9.6.0")
     testImplementation("org.postgresql:postgresql:42.7.9")
     testImplementation("com.microsoft.sqlserver:mssql-jdbc:13.2.1.jre11")
     testImplementation("com.oracle.database.jdbc:ojdbc11:23.26.0.0.0")
@@ -54,7 +54,7 @@ dependencies {
     implementation("org.apache.commons:commons-dbcp2:2.14.0")
 
     // Runtime only dependencies are not added to the compile classpath of projects that depend on this project.
-    runtimeOnly("com.mysql:mysql-connector-j:9.5.0")
+    runtimeOnly("com.mysql:mysql-connector-j:9.6.0")
 
     // Lombok for generating boilerplate code.
     compileOnly("org.projectlombok:lombok:1.18.42")
