@@ -8,7 +8,7 @@ import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.SourcesJar
 
 group = "jp.vemi"
-version = "0.0.2"
+version = "0.0.3"
 
 sourceSets {
     named("main") {
