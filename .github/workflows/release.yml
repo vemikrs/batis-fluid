@@ -8,7 +8,7 @@ name: Release
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to release (e.g., v0.0.2)'
+        description: 'Version to release (e.g., v0.0.3). Leave empty for automatic patch bump.'
         required: false
         type: string
       skip_maven_central:
@@ -34,6 +34,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set execute permission for gradlew
         run: chmod +x ./gradlew
@@ -44,19 +47,120 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Determine version
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Resolve version
         id: version
         run: |
-          if [ -n "${{ github.event.inputs.version }}" ]; then
-            TAG_VERSION="${{ github.event.inputs.version }}"
-          else
+          # --- Helper: compare semver (returns 0 if $1 > $2) ---
+          version_gt() {
+            local IFS='.'
+            local -a v1=($1) v2=($2)
+            for i in 0 1 2; do
+              if (( v1[i] > v2[i] )); then return 0; fi
+              if (( v1[i] < v2[i] )); then return 1; fi
+            done
+            return 1  # equal → not greater
+          }
+
+          # --- Fetch latest stable tag (exclude prerelease like -test, -rc, etc.) ---
+          LATEST_TAG=$(git tag --list 'v*.*.*' --sort=-v:refname \
+            | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -1)
+          LATEST_VERSION="${LATEST_TAG#v}"
+          echo "Latest stable tag: ${LATEST_TAG:-<none>} (version: ${LATEST_VERSION:-<none>})"
+
+          INPUT_VERSION="${{ github.event.inputs.version }}"
+
+          if [ "${{ github.event_name }}" = "push" ]; then
+            # === Triggered by tag push (existing behavior) ===
             TAG_VERSION="${GITHUB_REF#refs/tags/}"
+            PUBLISH_VERSION="${TAG_VERSION#v}"
+            echo "Tag push trigger: ${TAG_VERSION}"
+
+          elif [ -z "$INPUT_VERSION" ]; then
+            # === No version specified: automatic patch bump ===
+            if [ -z "$LATEST_VERSION" ]; then
+              echo "❌ No existing tags found. Please specify a version for the initial release."
+              exit 1
+            fi
+
+            IFS='.' read -r MAJOR MINOR PATCH <<< "$LATEST_VERSION"
+            NEW_VERSION="${MAJOR}.${MINOR}.$((PATCH + 1))"
+            TAG_VERSION="v${NEW_VERSION}"
+            PUBLISH_VERSION="${NEW_VERSION}"
+
+            echo "🔄 Auto patch bump: ${LATEST_TAG} → ${TAG_VERSION}"
+
+            # Update build.gradle.kts files
+            sed -i "s/^version = \".*\"/version = \"${NEW_VERSION}\"/" \
+              lib/build.gradle.kts spring/build.gradle.kts
+
+            # Commit & push
+            git add lib/build.gradle.kts spring/build.gradle.kts
+            git commit -m "chore(release): bump version to ${NEW_VERSION} [skip ci]"
+            git push origin main
+
+            # Create & push tag
+            git tag "${TAG_VERSION}"
+            git push origin "${TAG_VERSION}"
+
+          else
+            # === Version specified ===
+            TAG_VERSION="${INPUT_VERSION}"
+            # Ensure 'v' prefix
+            [[ "$TAG_VERSION" != v* ]] && TAG_VERSION="v${TAG_VERSION}"
+            PUBLISH_VERSION="${TAG_VERSION#v}"
+
+            # Validate semver format
+            if ! [[ "$TAG_VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+              echo "❌ Invalid semver format: ${TAG_VERSION}"
+              echo "Expected format: vX.Y.Z (e.g., v0.1.0)"
+              exit 1
+            fi
+
+            # Check if tag already exists on remote
+            if git ls-remote --tags origin "refs/tags/${TAG_VERSION}" | grep -q "${TAG_VERSION}"; then
+              echo "✅ Tag ${TAG_VERSION} already exists on remote. Using existing tag."
+            else
+              # Tag doesn't exist — validate it's an increment over latest
+              if [ -z "$LATEST_VERSION" ]; then
+                echo "No existing tags. Creating initial tag: ${TAG_VERSION}"
+              else
+                if ! version_gt "${PUBLISH_VERSION}" "${LATEST_VERSION}"; then
+                  echo "❌ Version ${PUBLISH_VERSION} is not greater than latest ${LATEST_VERSION}"
+                  echo "New version must be an increment (MAJOR, MINOR, or PATCH) over the latest release."
+                  exit 1
+                fi
+                echo "✅ Version ${PUBLISH_VERSION} > ${LATEST_VERSION} — validation passed"
+              fi
+
+              echo "🏷️  Creating new tag: ${TAG_VERSION}"
+
+              # Update build.gradle.kts files
+              sed -i "s/^version = \".*\"/version = \"${PUBLISH_VERSION}\"/" \
+                lib/build.gradle.kts spring/build.gradle.kts
+
+              # Commit & push
+              git add lib/build.gradle.kts spring/build.gradle.kts
+              if git diff --cached --quiet; then
+                echo "No version changes needed in build.gradle.kts"
+              else
+                git commit -m "chore(release): bump version to ${PUBLISH_VERSION} [skip ci]"
+                git push origin main
+              fi
+
+              # Create & push tag
+              git tag "${TAG_VERSION}"
+              git push origin "${TAG_VERSION}"
+            fi
           fi
-          # Strip leading 'v' from tag for artifact/POM version
-          PUBLISH_VERSION="${TAG_VERSION#v}"
+
           echo "version=${TAG_VERSION}" >> $GITHUB_OUTPUT
           echo "publish_version=${PUBLISH_VERSION}" >> $GITHUB_OUTPUT
-          echo "Building version: ${TAG_VERSION} (publish version: ${PUBLISH_VERSION})"
+          echo "📦 Building version: ${TAG_VERSION} (publish version: ${PUBLISH_VERSION})"
 
       - name: Build artifacts
         run: |
