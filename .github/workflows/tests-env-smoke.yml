@@ -91,7 +91,7 @@ jobs:
 
       - name: Upload test reports (XML/HTML)
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: env-smoke-test-reports-java-${{ matrix.java }}
           path: |
@@ -102,7 +102,7 @@ jobs:
 
       - name: Upload JaCoCo reports
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: env-smoke-jacoco-java-${{ matrix.java }}
           path: |
