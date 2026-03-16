@@ -18,18 +18,18 @@ repositories { mavenCentral() }
 dependencies {
     // Use JUnit Jupiter for testing.
     testImplementation("org.junit.jupiter:junit-jupiter-api:6.0.3")
-    testImplementation("org.mockito:mockito-junit-jupiter:5.22.0")
+    testImplementation("org.mockito:mockito-junit-jupiter:5.23.0")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:6.0.3")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher:6.0.3")
 
     // Mockito for mocking in tests.
-    testImplementation("org.mockito:mockito-core:5.22.0")
+    testImplementation("org.mockito:mockito-core:5.23.0")
 
     // Database dependencies for testing.
     testImplementation("com.h2database:h2:2.4.240")
     testImplementation("com.mysql:mysql-connector-j:9.6.0")
     testImplementation("org.postgresql:postgresql:42.7.10")
-    testImplementation("com.microsoft.sqlserver:mssql-jdbc:13.2.1.jre11")
+    testImplementation("com.microsoft.sqlserver:mssql-jdbc:13.4.0.jre11")
     testImplementation("com.oracle.database.jdbc:ojdbc11:23.26.1.0.0")
 
     // Testcontainers for integration testing (align to latest stable)
@@ -57,10 +57,10 @@ dependencies {
     runtimeOnly("com.mysql:mysql-connector-j:9.6.0")
 
     // Lombok for generating boilerplate code.
-    compileOnly("org.projectlombok:lombok:1.18.42")
-    annotationProcessor("org.projectlombok:lombok:1.18.42")
-    testCompileOnly("org.projectlombok:lombok:1.18.42")
-    testAnnotationProcessor("org.projectlombok:lombok:1.18.42")
+    compileOnly("org.projectlombok:lombok:1.18.44")
+    annotationProcessor("org.projectlombok:lombok:1.18.44")
+    testCompileOnly("org.projectlombok:lombok:1.18.44")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.44")
 
     // SLF4J for logging
     implementation("org.slf4j:slf4j-api:2.0.17")
