@@ -46,3 +46,4 @@ build
 
 # History files
 .history/
+.DS_Store
