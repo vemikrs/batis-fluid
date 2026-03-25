@@ -35,7 +35,7 @@ jobs:
           java-version: "21"
 
       - name: Setup Gradle (cache enabled)
-        uses: gradle/actions/setup-gradle@v5
+        uses: gradle/actions/setup-gradle@v6
 
       - name: Restore Gradle wrapper jar from cache
         uses: actions/cache@v5
