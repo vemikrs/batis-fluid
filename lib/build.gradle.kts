@@ -47,7 +47,7 @@ dependencies {
     api("org.mybatis:mybatis-spring:4.0.0")
 
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
-    implementation("org.mybatis.generator:mybatis-generator-core:1.4.2")
+    implementation("org.mybatis.generator:mybatis-generator-core:2.0.0")
     implementation("org.apache.commons:commons-math3:3.6.1")
     implementation("org.apache.commons:commons-lang3:3.20.0")
     implementation("com.google.guava:guava:33.5.0-jre")
