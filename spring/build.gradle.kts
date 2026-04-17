@@ -26,13 +26,13 @@ repositories { mavenCentral() }
 dependencies {
     api(project(":lib"))
     api("org.springframework.boot:spring-boot-autoconfigure:4.0.5")
-    api("org.springframework:spring-context:7.0.6")
-    api("org.springframework:spring-beans:7.0.6")
+    api("org.springframework:spring-context:7.0.7")
+    api("org.springframework:spring-beans:7.0.7")
     api("org.mybatis:mybatis-spring:4.0.0")
 
     // Align Spring 6.x
-    implementation("org.springframework:spring-tx:7.0.6")
-    implementation("org.springframework:spring-jdbc:7.0.6")
+    implementation("org.springframework:spring-tx:7.0.7")
+    implementation("org.springframework:spring-jdbc:7.0.7")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test:4.0.5")
     // Override transitive assertj-core to fix XXE vulnerability (CVE-2026-24400)
