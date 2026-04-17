@@ -50,7 +50,7 @@ dependencies {
     implementation("org.mybatis.generator:mybatis-generator-core:2.0.0")
     implementation("org.apache.commons:commons-math3:3.6.1")
     implementation("org.apache.commons:commons-lang3:3.20.0")
-    implementation("com.google.guava:guava:33.5.0-jre")
+    implementation("com.google.guava:guava:33.6.0-jre")
     implementation("org.apache.commons:commons-dbcp2:2.14.0")
 
     // Runtime only dependencies are not added to the compile classpath of projects that depend on this project.
