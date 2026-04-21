@@ -3,7 +3,7 @@ plugins {
     id("java-library")
     id("com.vanniktech.maven.publish")
     id("jacoco")
-    id("com.github.ben-manes.versions") version "0.53.0"
+    id("com.github.ben-manes.versions") version "0.54.0"
 }
 
 import com.vanniktech.maven.publish.JavaLibrary
@@ -33,11 +33,11 @@ dependencies {
     testImplementation("com.oracle.database.jdbc:ojdbc11:23.26.1.0.0")
 
     // Testcontainers for integration testing (align to latest stable)
-    testImplementation("org.testcontainers:testcontainers-junit-jupiter:2.0.4")
-    testImplementation("org.testcontainers:testcontainers-mysql:2.0.4")
-    testImplementation("org.testcontainers:testcontainers-postgresql:2.0.4")
-    testImplementation("org.testcontainers:testcontainers-mssqlserver:2.0.4")
-    testImplementation("org.testcontainers:testcontainers-oracle-xe:2.0.4")
+    testImplementation("org.testcontainers:testcontainers-junit-jupiter:2.0.5")
+    testImplementation("org.testcontainers:testcontainers-mysql:2.0.5")
+    testImplementation("org.testcontainers:testcontainers-postgresql:2.0.5")
+    testImplementation("org.testcontainers:testcontainers-mssqlserver:2.0.5")
+    testImplementation("org.testcontainers:testcontainers-oracle-xe:2.0.5")
 
     // AssertJ for fluent assertions
     testImplementation("org.assertj:assertj-core:3.27.7")
