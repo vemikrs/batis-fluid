@@ -3,7 +3,7 @@ plugins {
     id("java-library")
     id("com.vanniktech.maven.publish")
     id("jacoco")
-    id("com.github.ben-manes.versions") version "0.53.0"
+    id("com.github.ben-manes.versions") version "0.54.0"
 }
 
 import com.vanniktech.maven.publish.JavaLibrary
@@ -33,11 +33,11 @@ dependencies {
     testImplementation("com.oracle.database.jdbc:ojdbc11:23.26.1.0.0")
 
     // Testcontainers for integration testing (align to latest stable)
-    testImplementation("org.testcontainers:testcontainers-junit-jupiter:2.0.4")
-    testImplementation("org.testcontainers:testcontainers-mysql:2.0.4")
-    testImplementation("org.testcontainers:testcontainers-postgresql:2.0.4")
-    testImplementation("org.testcontainers:testcontainers-mssqlserver:2.0.4")
-    testImplementation("org.testcontainers:testcontainers-oracle-xe:2.0.4")
+    testImplementation("org.testcontainers:testcontainers-junit-jupiter:2.0.5")
+    testImplementation("org.testcontainers:testcontainers-mysql:2.0.5")
+    testImplementation("org.testcontainers:testcontainers-postgresql:2.0.5")
+    testImplementation("org.testcontainers:testcontainers-mssqlserver:2.0.5")
+    testImplementation("org.testcontainers:testcontainers-oracle-xe:2.0.5")
 
     // AssertJ for fluent assertions
     testImplementation("org.assertj:assertj-core:3.27.7")
@@ -57,10 +57,10 @@ dependencies {
     runtimeOnly("com.mysql:mysql-connector-j:9.6.0")
 
     // Lombok for generating boilerplate code.
-    compileOnly("org.projectlombok:lombok:1.18.44")
-    annotationProcessor("org.projectlombok:lombok:1.18.44")
-    testCompileOnly("org.projectlombok:lombok:1.18.44")
-    testAnnotationProcessor("org.projectlombok:lombok:1.18.44")
+    compileOnly("org.projectlombok:lombok:1.18.46")
+    annotationProcessor("org.projectlombok:lombok:1.18.46")
+    testCompileOnly("org.projectlombok:lombok:1.18.46")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.46")
 
     // SLF4J for logging
     implementation("org.slf4j:slf4j-api:2.0.17")
