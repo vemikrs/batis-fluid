@@ -57,10 +57,10 @@ dependencies {
     runtimeOnly("com.mysql:mysql-connector-j:9.6.0")
 
     // Lombok for generating boilerplate code.
-    compileOnly("org.projectlombok:lombok:1.18.44")
-    annotationProcessor("org.projectlombok:lombok:1.18.44")
-    testCompileOnly("org.projectlombok:lombok:1.18.44")
-    testAnnotationProcessor("org.projectlombok:lombok:1.18.44")
+    compileOnly("org.projectlombok:lombok:1.18.46")
+    annotationProcessor("org.projectlombok:lombok:1.18.46")
+    testCompileOnly("org.projectlombok:lombok:1.18.46")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.46")
 
     // SLF4J for logging
     implementation("org.slf4j:slf4j-api:2.0.17")
