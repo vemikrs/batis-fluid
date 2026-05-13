@@ -30,7 +30,7 @@ dependencies {
     testImplementation("com.mysql:mysql-connector-j:9.7.0")
     testImplementation("org.postgresql:postgresql:42.7.11")
     testImplementation("com.microsoft.sqlserver:mssql-jdbc:13.4.0.jre11")
-    testImplementation("com.oracle.database.jdbc:ojdbc11:23.26.1.0.0")
+    testImplementation("com.oracle.database.jdbc:ojdbc11:23.26.2.0.0")
 
     // Testcontainers for integration testing (align to latest stable)
     testImplementation("org.testcontainers:testcontainers-junit-jupiter:2.0.5")
@@ -63,7 +63,7 @@ dependencies {
     testAnnotationProcessor("org.projectlombok:lombok:1.18.46")
 
     // SLF4J for logging
-    implementation("org.slf4j:slf4j-api:2.0.17")
+    implementation("org.slf4j:slf4j-api:2.0.18")
     implementation("ch.qos.logback:logback-classic:1.5.32")
 }
 
