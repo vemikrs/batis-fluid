@@ -1,7 +1,7 @@
 // Share plugin versions across subprojects (must be the first block)
 pluginManagement {
     plugins {
-        id("com.vanniktech.maven.publish") version "0.36.0"
+        id("com.vanniktech.maven.publish") version "0.37.0"
     }
 }
 
