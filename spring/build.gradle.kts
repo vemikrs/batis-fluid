@@ -28,7 +28,7 @@ dependencies {
     api("org.springframework.boot:spring-boot-autoconfigure:4.0.6")
     api("org.springframework:spring-context:7.0.7")
     api("org.springframework:spring-beans:7.0.7")
-    api("org.mybatis:mybatis-spring:4.0.0")
+    api("org.mybatis:mybatis-spring:4.1.0")
 
     // Align Spring 6.x
     implementation("org.springframework:spring-tx:7.0.7")
