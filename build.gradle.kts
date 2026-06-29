@@ -1,6 +1,6 @@
 plugins {
     // Central Portal 推奨: Vanniktech Maven Publish Plugin を採用
-    id("com.vanniktech.maven.publish") version "0.36.0" apply false
+    id("com.vanniktech.maven.publish") version "0.37.0" apply false
 }
 
 // ルートプロジェクトのグループIDを定義します（モジュールと揃えるため）。
