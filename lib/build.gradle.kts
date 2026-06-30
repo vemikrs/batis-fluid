@@ -17,10 +17,10 @@ repositories { mavenCentral() }
 
 dependencies {
     // Use JUnit Jupiter for testing.
-    testImplementation("org.junit.jupiter:junit-jupiter-api:6.1.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:6.1.1")
     testImplementation("org.mockito:mockito-junit-jupiter:5.23.0")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:6.1.0")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher:6.1.0")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:6.1.1")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher:6.1.1")
 
     // Mockito for mocking in tests.
     testImplementation("org.mockito:mockito-core:5.23.0")
@@ -28,7 +28,7 @@ dependencies {
     // Database dependencies for testing.
     testImplementation("com.h2database:h2:2.4.240")
     testImplementation("com.mysql:mysql-connector-j:9.7.0")
-    testImplementation("org.postgresql:postgresql:42.7.11")
+    testImplementation("org.postgresql:postgresql:42.7.12")
     testImplementation("com.microsoft.sqlserver:mssql-jdbc:13.4.0.jre11")
     testImplementation("com.oracle.database.jdbc:ojdbc11:23.26.2.0.0")
 
@@ -44,7 +44,7 @@ dependencies {
 
     // This dependency is exported to consumers, that is to say found on their compile classpath.
     api("org.mybatis:mybatis:3.5.19")
-    api("org.mybatis:mybatis-spring:4.0.0")
+    api("org.mybatis:mybatis-spring:4.1.0")
 
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     implementation("org.mybatis.generator:mybatis-generator-core:2.0.0")
@@ -64,7 +64,7 @@ dependencies {
 
     // SLF4J for logging
     implementation("org.slf4j:slf4j-api:2.0.18")
-    implementation("ch.qos.logback:logback-classic:1.5.32")
+    implementation("ch.qos.logback:logback-classic:1.5.37")
 }
 
 java {
