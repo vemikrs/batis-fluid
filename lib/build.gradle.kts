@@ -28,7 +28,7 @@ dependencies {
     // Database dependencies for testing.
     testImplementation("com.h2database:h2:2.4.240")
     testImplementation("com.mysql:mysql-connector-j:9.7.0")
-    testImplementation("org.postgresql:postgresql:42.7.12")
+    testImplementation("org.postgresql:postgresql:42.7.13")
     testImplementation("com.microsoft.sqlserver:mssql-jdbc:13.4.0.jre11")
     testImplementation("com.oracle.database.jdbc:ojdbc11:23.26.2.0.0")
 
