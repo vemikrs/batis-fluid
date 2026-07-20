@@ -37,8 +37,8 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test:4.1.0")
     // Override transitive assertj-core to fix XXE vulnerability (CVE-2026-24400)
     testImplementation("org.assertj:assertj-core:3.27.7")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:6.1.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:6.1.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:6.1.2")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:6.1.2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("com.h2database:h2:2.4.240")
 }
