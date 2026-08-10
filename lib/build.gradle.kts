@@ -3,7 +3,7 @@ plugins {
     id("java-library")
     id("com.vanniktech.maven.publish")
     id("jacoco")
-    id("com.github.ben-manes.versions") version "0.54.0"
+    id("com.github.ben-manes.versions") version "0.60.0"
 }
 
 import com.vanniktech.maven.publish.JavaLibrary
@@ -30,7 +30,7 @@ dependencies {
     testImplementation("com.mysql:mysql-connector-j:9.7.0")
     testImplementation("org.postgresql:postgresql:42.7.13")
     testImplementation("com.microsoft.sqlserver:mssql-jdbc:13.4.0.jre11")
-    testImplementation("com.oracle.database.jdbc:ojdbc11:23.26.2.0.0")
+    testImplementation("com.oracle.database.jdbc:ojdbc11:23.26.3.0.0")
 
     // Testcontainers for integration testing (align to latest stable)
     testImplementation("org.testcontainers:testcontainers-junit-jupiter:2.0.5")
@@ -64,7 +64,7 @@ dependencies {
 
     // SLF4J for logging
     implementation("org.slf4j:slf4j-api:2.0.18")
-    implementation("ch.qos.logback:logback-classic:1.5.38")
+    implementation("ch.qos.logback:logback-classic:1.6.1")
 }
 
 java {
