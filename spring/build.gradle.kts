@@ -25,7 +25,7 @@ repositories { mavenCentral() }
 
 dependencies {
     api(project(":lib"))
-    api("org.springframework.boot:spring-boot-autoconfigure:4.1.0")
+    api("org.springframework.boot:spring-boot-autoconfigure:4.1.1")
     api("org.springframework:spring-context:7.0.8")
     api("org.springframework:spring-beans:7.0.8")
     api("org.mybatis:mybatis-spring:4.1.0")
@@ -34,7 +34,7 @@ dependencies {
     implementation("org.springframework:spring-tx:7.0.8")
     implementation("org.springframework:spring-jdbc:7.0.8")
 
-    testImplementation("org.springframework.boot:spring-boot-starter-test:4.1.0")
+    testImplementation("org.springframework.boot:spring-boot-starter-test:4.1.1")
     // Override transitive assertj-core to fix XXE vulnerability (CVE-2026-24400)
     testImplementation("org.assertj:assertj-core:3.27.7")
     testImplementation("org.junit.jupiter:junit-jupiter-api:6.1.2")
