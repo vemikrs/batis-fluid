@@ -3,7 +3,7 @@ plugins {
     id("java-library")
     id("com.vanniktech.maven.publish")
     id("jacoco")
-    id("com.github.ben-manes.versions") version "0.54.0"
+    id("com.github.ben-manes.versions") version "0.61.0"
 }
 
 import com.vanniktech.maven.publish.JavaLibrary
@@ -17,10 +17,10 @@ repositories { mavenCentral() }
 
 dependencies {
     // Use JUnit Jupiter for testing.
-    testImplementation("org.junit.jupiter:junit-jupiter-api:6.1.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:6.1.3")
     testImplementation("org.mockito:mockito-junit-jupiter:5.23.0")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:6.1.2")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher:6.1.2")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:6.1.3")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher:6.1.3")
 
     // Mockito for mocking in tests.
     testImplementation("org.mockito:mockito-core:5.23.0")
@@ -50,7 +50,7 @@ dependencies {
     implementation("org.mybatis.generator:mybatis-generator-core:2.0.0")
     implementation("org.apache.commons:commons-math3:3.6.1")
     implementation("org.apache.commons:commons-lang3:3.20.0")
-    implementation("com.google.guava:guava:33.6.0-jre")
+    implementation("com.google.guava:guava:33.7.1-jre")
     implementation("org.apache.commons:commons-dbcp2:2.14.0")
 
     // Runtime only dependencies are not added to the compile classpath of projects that depend on this project.
@@ -64,7 +64,7 @@ dependencies {
 
     // SLF4J for logging
     implementation("org.slf4j:slf4j-api:2.0.18")
-    implementation("ch.qos.logback:logback-classic:1.5.38")
+    implementation("ch.qos.logback:logback-classic:1.6.3")
 }
 
 java {
