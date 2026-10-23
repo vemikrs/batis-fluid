@@ -43,7 +43,7 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.27.7")
 
     // This dependency is exported to consumers, that is to say found on their compile classpath.
-    api("org.mybatis:mybatis:3.5.19")
+    api("org.mybatis:mybatis:3.6.0")
     api("org.mybatis:mybatis-spring:4.1.0")
 
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
