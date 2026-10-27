@@ -3,7 +3,7 @@ plugins {
     id("java-library")
     id("com.vanniktech.maven.publish")
     id("jacoco")
-    id("com.github.ben-manes.versions") version "0.65.0"
+    id("com.github.ben-manes.versions") version "0.66.0"
 }
 
 import com.vanniktech.maven.publish.JavaLibrary
@@ -29,7 +29,7 @@ dependencies {
     testImplementation("com.h2database:h2:2.5.252")
     testImplementation("com.mysql:mysql-connector-j:9.7.0")
     testImplementation("org.postgresql:postgresql:42.7.14")
-    testImplementation("com.microsoft.sqlserver:mssql-jdbc:13.6.0.jre11")
+    testImplementation("com.microsoft.sqlserver:mssql-jdbc:13.6.1.jre11")
     testImplementation("com.oracle.database.jdbc:ojdbc11:23.26.3.0.0")
 
     // Testcontainers for integration testing (align to latest stable)
@@ -43,7 +43,7 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.27.7")
 
     // This dependency is exported to consumers, that is to say found on their compile classpath.
-    api("org.mybatis:mybatis:3.5.19")
+    api("org.mybatis:mybatis:3.6.0")
     api("org.mybatis:mybatis-spring:4.1.0")
 
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
