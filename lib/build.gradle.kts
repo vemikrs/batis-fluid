@@ -3,7 +3,7 @@ plugins {
     id("java-library")
     id("com.vanniktech.maven.publish")
     id("jacoco")
-    id("com.github.ben-manes.versions") version "0.65.0"
+    id("com.github.ben-manes.versions") version "0.67.0"
 }
 
 import com.vanniktech.maven.publish.JavaLibrary
@@ -29,8 +29,8 @@ dependencies {
     testImplementation("com.h2database:h2:2.5.252")
     testImplementation("com.mysql:mysql-connector-j:9.7.0")
     testImplementation("org.postgresql:postgresql:42.7.14")
-    testImplementation("com.microsoft.sqlserver:mssql-jdbc:13.6.0.jre11")
-    testImplementation("com.oracle.database.jdbc:ojdbc11:23.26.3.0.0")
+    testImplementation("com.microsoft.sqlserver:mssql-jdbc:13.6.2.jre11")
+    testImplementation("com.oracle.database.jdbc:ojdbc11:23.26.4.0.0")
 
     // Testcontainers for integration testing (align to latest stable)
     testImplementation("org.testcontainers:testcontainers-junit-jupiter:2.0.5")
@@ -43,14 +43,14 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.27.7")
 
     // This dependency is exported to consumers, that is to say found on their compile classpath.
-    api("org.mybatis:mybatis:3.5.19")
+    api("org.mybatis:mybatis:3.6.0")
     api("org.mybatis:mybatis-spring:4.1.0")
 
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     implementation("org.mybatis.generator:mybatis-generator-core:2.0.0")
     implementation("org.apache.commons:commons-math3:3.6.1")
     implementation("org.apache.commons:commons-lang3:3.21.0")
-    implementation("com.google.guava:guava:33.7.2-jre")
+    implementation("com.google.guava:guava:33.8.0-jre")
     implementation("org.apache.commons:commons-dbcp2:2.14.0")
 
     // Runtime only dependencies are not added to the compile classpath of projects that depend on this project.
@@ -64,7 +64,7 @@ dependencies {
 
     // SLF4J for logging
     implementation("org.slf4j:slf4j-api:2.0.20")
-    implementation("ch.qos.logback:logback-classic:1.6.5")
+    implementation("ch.qos.logback:logback-classic:1.6.6")
 }
 
 java {
